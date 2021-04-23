@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/unity,csharp,visualstudio
-# Edit at https://www.toptal.com/developers/gitignore?templates=unity,csharp,visualstudio
+# Created by https://www.toptal.com/developers/gitignore/api/csharp,unity,visualstudio
+# Edit at https://www.toptal.com/developers/gitignore?templates=csharp,unity,visualstudio
 
 ### Csharp ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -586,8 +586,4 @@ InitTestScene*.unity
 
 # Fody - auto-generated XML schema
 
-### VisualStudio Patch ###
-# Additional files built by Visual Studio
-*.tlog
-
-# End of https://www.toptal.com/developers/gitignore/api/unity,csharp,visualstudio
+# End of https://www.toptal.com/developers/gitignore/api/csharp,unity,visualstudio
