@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class MeshGen : MonoBehaviour
 {
-    int MAP_X = 3;
-    int MAP_Y = 2;
-    int MAP_Z = 2;
+    public int MAP_X = 5;
+    public int MAP_Y = 2;
+    public int MAP_Z = 5;
 
 
 
@@ -21,91 +21,34 @@ public class MeshGen : MonoBehaviour
     List<int> tri = new List<int>();
     List<Vector2> uv = new List<Vector2>();
     int rollingcount = 11;
+    GameObject MC;
+    public bool SelfSetUp;
+        NoiseFilter noiseFilter = new NoiseFilter();
+
     void Start()
     {
+
+       // int q = 0;
+       // for (int y = 0; y < MAP_Y; y++)
+       // {
+       //     for (int z = 0; z < MAP_Z; z++)
+       //     {
+       //         for (int x = 0; x < MAP_X; x++)
+       //         {
+       //             //print(noiseFilter.Evalauate(new Vector3(x, y, z)));
+       //             Instantiate(spheresActive, new Vector3(x, noiseFilter.Evalauate(new Vector3(x, y, z)), z), Quaternion.identity);
+       //             Corners[q] = new Vector3(x, noiseFilter.Evalauate(new Vector3(x, y, z)), z);
+       //             q++;
+       //         }
+       //     }
+       // }
+
+
+
+
+
         Mesh mesh = new Mesh();
-
-        int count = 0;
         hit = Physics.SphereCastAll(transform.position, 2, Vector3.forward, 2);
-        
-        //  Instantiate(spheresActive, transform.position + new Vector3(0.475f, 0.5f, 0.525f), Quaternion.identity);
-
-
-        /*foreach (var item in hit)
-        {
-            if (item.transform.position == (transform.position + new Vector3(0.475f, -0.5f, 0.525f)))
-            {
-                // print(item.transform.name); //0
-                Corners[0] = transform.position + new Vector3(0.475f, -0.5f, 0.525f);
-                item.transform.name = "0";
-            }
-
-            if (item.transform.position == (transform.position + new Vector3(0.475f, -0.5f, -0.475f)))
-            {
-                // print(item.transform.name); //1
-                Corners[1] = transform.position + new Vector3(0.475f, -0.5f, -0.475f);
-                item.transform.name = "1";
-            }
-
-            if (item.transform.position == (transform.position + new Vector3(-0.525f, -0.5f, -0.475f)))
-            {
-                // print(item.transform.name); //2
-                Corners[2] = transform.position + new Vector3(-0.525f, -0.5f, -0.475f);
-                item.transform.name = "2";
-            }
-
-            if (item.transform.position == (transform.position + new Vector3(-0.525f, -0.5f, 0.525f)))
-            {
-                //  print(item.transform.name); //3
-                Corners[3] = transform.position + new Vector3(-0.525f, -0.5f, 0.525f);
-                item.transform.name = "3";
-            }
-
-
-
-
-
-            //  print(transform.position + new Vector3(0.475f, -0.5f, -0.475f));
-
-            if (item.transform.position == (transform.position + new Vector3(0.475f, 0.5f, 0.525f)))
-            {
-                //print(item.transform.name); //4
-                Corners[4] = transform.position + new Vector3(0.475f, 0.5f, 0.525f);
-                item.transform.name = "4";
-            }
-            if (item.transform.position == (transform.position + new Vector3(0.475f, 0.5f, -0.475f)))
-            {
-                //print(item.transform.name); //5
-                Corners[5] = transform.position + new Vector3(0.475f, 0.5f, -0.475f);
-                item.transform.name = "5";
-            }
-
-            if (item.transform.position == (transform.position + new Vector3(-0.525f, 0.5f, -0.475f)))
-            {
-                // print(item.transform.name); //6
-                Corners[6] = transform.position + new Vector3(-0.525f, 0.5f, -0.475f);
-                item.transform.name = "6";
-            }
-
-            if (item.transform.position == (transform.position + new Vector3(-0.525f, 0.5f, 0.525f)))
-            {
-                // print(item.transform.name); //7
-                Corners[7] = transform.position + new Vector3(-0.525f, 0.5f, 0.525f);
-                item.transform.name = "7";
-            }
-
-
-
-        }*/
-
-
-
-        // List<Vector2> edges = new List<Vector2>();
-        //
-        // edges.Add(new Vector2(0, 4));
-        // edges.Add(new Vector2(0, 1));
-        // edges.Add(new Vector2(1, 5));
-        // edges.Add(new Vector2(4, 5));
         //
         // edges.Add(new Vector2(2, 6));
         // edges.Add(new Vector2(2, 3));
@@ -117,25 +60,67 @@ public class MeshGen : MonoBehaviour
         // edges.Add(new Vector2(5, 7));
         // edges.Add(new Vector2(4, 6));
 
-        /* 
-                // List<Vector3> verts = new List<Vector3>();
 
-                vertices.Add((Corners[0] + Corners[1]) / 2);
-                vertices.Add((Corners[1] + Corners[2]) / 2);
-                vertices.Add((Corners[2] + Corners[3]) / 2);
-                vertices.Add((Corners[3] + Corners[0]) / 2);
+        // List<Vector3> verts = new List<Vector3>();
 
-                vertices.Add((Corners[4] + Corners[5]) / 2);
-                vertices.Add((Corners[5] + Corners[6]) / 2);
-                vertices.Add((Corners[6] + Corners[7]) / 2);
-                vertices.Add((Corners[7] + Corners[4]) / 2);
-
-                vertices.Add((Corners[0] + Corners[4]) / 2);
-                vertices.Add((Corners[5] + Corners[1]) / 2);
-                vertices.Add((Corners[2] + Corners[6]) / 2);
-                vertices.Add((Corners[7] + Corners[3]) / 2);
-
-        */
+       // vertices.Add((Corners[0] + Corners[1]) / 2);
+       // vertices.Add((Corners[1] + Corners[2]) / 2);
+       // vertices.Add((Corners[2] + Corners[3]) / 2);
+       // vertices.Add((Corners[3] + Corners[0]) / 2);
+       //
+       // vertices.Add((Corners[4] + Corners[5]) / 2);
+       // vertices.Add((Corners[5] + Corners[6]) / 2);
+       // vertices.Add((Corners[6] + Corners[7]) / 2);
+       // vertices.Add((Corners[7] + Corners[4]) / 2);
+       //
+       // vertices.Add((Corners[0] + Corners[4]) / 2);
+       // vertices.Add((Corners[5] + Corners[1]) / 2);
+       // vertices.Add((Corners[2] + Corners[6]) / 2);
+       // vertices.Add((Corners[7] + Corners[3]) / 2);
+       //
+       // uv.Add(new Vector2(0, 1));
+       // uv.Add(new Vector2(1, 1));
+       // uv.Add(new Vector2(0, 0));
+       // uv.Add(new Vector2(1, 0));
+       //
+       // uv.Add(new Vector2(0, 1));
+       // uv.Add(new Vector2(1, 1));
+       // uv.Add(new Vector2(0, 0));
+       // uv.Add(new Vector2(1, 0));
+       //
+       // uv.Add(new Vector2(0, 1));
+       // uv.Add(new Vector2(1, 1));
+       // uv.Add(new Vector2(0, 0));
+       // uv.Add(new Vector2(1, 0));
+       //
+       // for (int i = 0; i < 15; i++)
+       // {
+       //     //print(triIndex);
+       //     int val = 0;
+       //     //if (vertices.Count < 11)
+       //     {
+       //         val = (TriangleTable[162, i]);
+       //     }
+       //     // else
+       //     // {
+       //
+       //     //val = (TriangleTable[triIndex, i] + (vertices.Count - 12));
+       //     //  }
+       //
+       //     if (val != -1)
+       //     {
+       //         print(val);
+       //         tri.Add(val);
+       //     }
+       //
+       // }
+       //
+        //triIndex = 0;
+        //
+        //transform.position = new Vector3(x, y, z);
+        //rollingcount += 11;
+    
+        
 
         /*
                 Vector3 temp;
@@ -184,42 +169,48 @@ public class MeshGen : MonoBehaviour
         //    }
         //    count++;
         //}
-        
-        for (int y = 0; y < MAP_Y; y++)
+
+      for (int y = 0; y < MAP_Y; y++)
+      {
+          for (int z = 0; z < MAP_Z; z++)
+          {
+              for (int x = 0; x < MAP_X; x++)
+              {
+                  Instantiate(spheresActive, new Vector3(x, y, z), Quaternion.identity).transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+              }
+          }
+      }
+
+        if (!SelfSetUp)
         {
-            for (int z = 0; z < MAP_Z; z++)
-            {
-                for (int x = 0; x < MAP_X; x++)
-                {
-                    Instantiate(spheresActive, new Vector3(x, y, z), Quaternion.identity).transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-                }
-            }
+            MarchingCubes();
+
+
+            // foreach (var item in vertices)
+            // {
+            //     print(item);
+            // }
+            // Vector2[] uv = new Vector2[]
+            //     { 
+            //     new Vector2(0,1),
+            //     new Vector2(1,1),
+            //     new Vector2(0,0),
+            //     new Vector2(1,0),
+            //     };
+
+            
+
+            mesh.vertices = vertices.ToArray();
+            mesh.triangles = tri.ToArray();
+            mesh.uv = uv.ToArray();
+
+
+            MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
+            //gameobject.transform.localScale = new Vector3(30, 30, 30);
+            MC.GetComponent<MeshRenderer>().material = Black;
+            MC.GetComponent<MeshFilter>().mesh = mesh;
+
         }
-
-        MarchingCubes();
-
-
-        // foreach (var item in vertices)
-        // {
-        //     print(item);
-        // }
-        // Vector2[] uv = new Vector2[]
-        //     { 
-        //     new Vector2(0,1),
-        //     new Vector2(1,1),
-        //     new Vector2(0,0),
-        //     new Vector2(1,0),
-        //     };
-
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = tri.ToArray();
-        mesh.uv = uv.ToArray();
-
-
-        GameObject gameobject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
-        //gameobject.transform.localScale = new Vector3(30, 30, 30);
-        gameobject.GetComponent<MeshFilter>().mesh = mesh;
-
 
         // Instantiate(spheresInactive, Corners[0], Quaternion.identity);
         // Instantiate(spheresActive, Corners[1], Quaternion.identity);
@@ -235,53 +226,89 @@ public class MeshGen : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            //gameObject.transform.position = new Vector3(0.5f, 0.5f, 0.5f);
+            //Mesh mesh = new Mesh();
+            //Destroy(MC);
+            //MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
+            //vertices.Clear();
+            //tri.Clear();
+            //uv.Clear();
+            //
+            //print(Time.frameCount);
+            //MarchingCubes();
+            //mesh.vertices = vertices.ToArray();
+            //mesh.triangles = tri.ToArray();
+            //mesh.uv = uv.ToArray();
+            //
+            //
+            ////  GameObject gameobject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
+            ////gameobject.transform.localScale = new Vector3(30, 30, 30);
+            //// gameobject.GetComponent<MeshRenderer>().material = Black;
+            //MC.GetComponent<MeshRenderer>().material = Black;
+            //MC.GetComponent<MeshFilter>().mesh = mesh;
 
+            
+            //for (int z = 0; z < MAP_X; z++)
+            //{
+            //    for (int x = 0; x < MAP_Z; x++)
+            //    {
+            //        for (int y = 0; y < MAP_Y; y++)
+            //        {
+            //
+            //        Instantiate(spheresActive, new Vector3(x, noiseFilter.Evalauate(new Vector3(x, y, z)), z), Quaternion.identity);
+            //        }
+            //    }
+            //}
+
+        }
     }
 
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(transform.position + new Vector3(0.5f, 0.5f, 0.5f), 0.2f);
-    }
-    private void OnTriggerEnter(Collider other)
-    {
-        print(other.transform.name);
-    }
+
 
     void MarchingCubes()
     {
         int c = 0;
 
         Vector3[] Corners = new Vector3[8];
-        int triIndex = 0;
+        int triIndexA = 0;
+        int triIndexB = 0;
         for (float y = 0.5f; y < MAP_Y - 1; y++)
         {
-            for (float z = 0.5f; z < MAP_Z - 1; z++)
+            for (float z = 0.5f; z < MAP_Z -1; z++)
             {
-                for (float x = 0.5f; x < MAP_X; x++)
+                for (float x = 0.5f; x < MAP_X -1; x++)
                 {
-                        hit = Physics.SphereCastAll(transform.position, 2, Vector3.forward, 2);
+                    hit = Physics.SphereCastAll(transform.position, 2, Vector3.forward, 2);
                     foreach (var item in hit)
                     {
-                        if (c < 4)
+                        if (!SelfSetUp)
                         {
-                            if (item.collider.tag == "Finish")
+                            if (c < 4)
                             {
-                                if (Random.Range(0, 10) <= 5)
+                                if (item.collider.tag == "Finish")
                                 {
-                                    item.collider.tag = "Active";
-                                    c++;
+                                    if (Random.Range(0, 10) <= 5)
+                                    {
+                                        item.collider.tag = "Active";
+                                        c++;
+                                    }
+                                    else
+                                    {
+                                        item.collider.tag = "Inactive";
+                                    }
                                 }
                                 else
                                 {
-                                    item.collider.tag = "Inactive";
+                                    c++;
                                 }
                             }
+
+                            c = 0;
                         }
 
 
-
-                        
 
                         if (item.transform.position == (transform.position + new Vector3(0.5f, -0.5f, 0.5f)))
                         {
@@ -289,9 +316,11 @@ public class MeshGen : MonoBehaviour
                             Corners[0] = transform.position + new Vector3(0.5f, -0.5f, 0.5f);
                             item.transform.name = "0";
                             if (item.collider.tag == "Active")
-                                triIndex += 1;
+                                triIndexA += 1;
+                            if (item.collider.tag == "Inactive")
+                                triIndexB += 1;
                         }
-                        print(transform.position + new Vector3(0.5f, -0.5f, 0.5f));
+                        // print(transform.position + new Vector3(0.5f, -0.5f, 0.5f));
 
                         if (item.transform.position == (transform.position + new Vector3(0.5f, -0.5f, -0.5f)))
                         {
@@ -299,7 +328,9 @@ public class MeshGen : MonoBehaviour
                             Corners[1] = transform.position + new Vector3(0.5f, -0.5f, -0.5f);
                             item.transform.name = "1";
                             if (item.collider.tag == "Active")
-                                triIndex += 2;
+                                triIndexA += 2;
+                            if (item.collider.tag == "Inactive")
+                                triIndexB += 2;
                         }
 
                         if (item.transform.position == (transform.position + new Vector3(-0.5f, -0.5f, -0.5f)))
@@ -308,7 +339,9 @@ public class MeshGen : MonoBehaviour
                             Corners[2] = transform.position + new Vector3(-0.5f, -0.5f, -0.5f);
                             item.transform.name = "2";
                             if (item.collider.tag == "Active")
-                                triIndex += 4;
+                                triIndexA += 4;
+                            if (item.collider.tag == "Inactive")
+                                triIndexB += 4;
                         }
 
                         if (item.transform.position == (transform.position + new Vector3(-0.5f, -0.5f, 0.5f)))
@@ -317,7 +350,9 @@ public class MeshGen : MonoBehaviour
                             Corners[3] = transform.position + new Vector3(-0.5f, -0.5f, 0.5f);
                             item.transform.name = "3";
                             if (item.collider.tag == "Active")
-                                triIndex += 8;
+                                triIndexA += 8;
+                            if (item.collider.tag == "Inactive")
+                                triIndexB += 8;
                         }
 
                         //  print(transform.position + new Vector3(0.475f, -0.5f, -0.475f));
@@ -328,7 +363,9 @@ public class MeshGen : MonoBehaviour
                             Corners[4] = transform.position + new Vector3(0.5f, 0.5f, 0.5f);
                             item.transform.name = "4";
                             if (item.collider.tag == "Active")
-                                triIndex += 16;
+                                triIndexA += 16;
+                            if (item.collider.tag == "Inactive")
+                                triIndexB += 16;
                         }
                         if (item.transform.position == (transform.position + new Vector3(0.5f, 0.5f, -0.5f)))
                         {
@@ -336,7 +373,9 @@ public class MeshGen : MonoBehaviour
                             Corners[5] = transform.position + new Vector3(0.5f, 0.5f, -0.5f);
                             item.transform.name = "5";
                             if (item.collider.tag == "Active")
-                                triIndex += 32;
+                                triIndexA += 32;
+                            if (item.collider.tag == "Inactive")
+                                triIndexB += 32;
                         }
 
                         if (item.transform.position == (transform.position + new Vector3(-0.5f, 0.5f, -0.5f)))
@@ -345,7 +384,9 @@ public class MeshGen : MonoBehaviour
                             Corners[6] = transform.position + new Vector3(-0.5f, 0.5f, -0.5f);
                             item.transform.name = "6";
                             if (item.collider.tag == "Active")
-                                triIndex += 64;
+                                triIndexA += 64;
+                            if (item.collider.tag == "Inactive")
+                                triIndexB += 64;
                         }
 
                         if (item.transform.position == (transform.position + new Vector3(-0.5f, 0.5f, 0.5f)))
@@ -354,10 +395,13 @@ public class MeshGen : MonoBehaviour
                             Corners[7] = transform.position + new Vector3(-0.5f, 0.5f, 0.5f);
                             item.transform.name = "7";
                             if (item.collider.tag == "Active")
-                                triIndex += 128;
+                                triIndexA += 128;
+                            if (item.collider.tag == "Inactive")
+                                triIndexB += 128;
                         }
 
                     }
+
 
 
                     vertices.Add((Corners[0] + Corners[1]) / 2);
@@ -391,30 +435,56 @@ public class MeshGen : MonoBehaviour
                     uv.Add(new Vector2(0, 0));
                     uv.Add(new Vector2(1, 0));
 
+
                     for (int i = 0; i < 15; i++)
                     {
                         //print(triIndex);
-                        int val = 0;
-                        if (vertices.Count > 11)
+                        int valA = 0;
+                        if (vertices.Count < 11)
                         {
 
-                            val = (TriangleTable[triIndex, i]);
+                            valA = (TriangleTable[triIndexA, i]);
                         }
                         else
                         {
 
-                            val = (TriangleTable[triIndex, i] + rollingcount);
+                            valA = (TriangleTable[triIndexA, i] + (vertices.Count - 12));
                         }
 
-                        if (val != -1)
+                        if (valA != -1)
                         {
-                            print(val);
-                            tri.Add(val);
+                            //  print(val);
+                            tri.Add(valA);
                         }
 
                     }
+                    for (int i = 0; i < 15; i++)
+                    {
 
-                    triIndex = 0;
+                        int valB = 0;
+                        if (vertices.Count < 11)
+                        {
+
+                            valB = (TriangleTable[triIndexB, i]);
+                        }
+                        else
+                        {
+
+                            valB = (TriangleTable[triIndexB, i] + (vertices.Count - 12));
+                        }
+
+                        if (valB != -1)
+                        {
+                            //  print(val);
+                            tri.Add(valB);
+                        }
+
+
+
+                    }
+
+                    triIndexA = 0;
+                    triIndexB = 0;
 
                     transform.position = new Vector3(x, y, z);
                     rollingcount += 11;

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6905720266354361348}
   - component: {fileID: 194261359444761198}
   - component: {fileID: 3759488649506239783}
+  - component: {fileID: -6370794486335991813}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Finish
@@ -49,8 +50,8 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8633367626247148491}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -95,3 +96,15 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-6370794486335991813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8633367626247148491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ba86e408d27f6c4d893218f279776a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
