@@ -161,6 +161,7 @@ MonoBehaviour:
   spheresActive: {fileID: 8633367626247148491, guid: 4b901bd4eef4a864ba7e873071bbb23c, type: 3}
   spheresInactive: {fileID: 6779185894838346343, guid: 2f4dc4c9e921ff14c8821a9c66d7ad7b, type: 3}
   Black: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  red: {fileID: 2100000, guid: cbf9e812b4bb78a45a34da42d6864b4f, type: 2}
   SelfSetUp: 0
 --- !u!65 &223237029
 BoxCollider:

@@ -15,13 +15,16 @@ public class MeshGen : MonoBehaviour
     public GameObject spheresActive;
     public GameObject spheresInactive;
     public Material Black;
+    public Material red;
     RaycastHit[] hit;
     List<Vector3> vertices = new List<Vector3>();
     Vector3[] Corners = new Vector3[8];
     List<int> tri = new List<int>();
+    List<int> tri2 = new List<int>();
     List<Vector2> uv = new List<Vector2>();
     int rollingcount = 11;
     GameObject MC;
+    GameObject MC2;
     public bool SelfSetUp;
         NoiseFilter noiseFilter = new NoiseFilter();
 
@@ -48,6 +51,7 @@ public class MeshGen : MonoBehaviour
 
 
         Mesh mesh = new Mesh();
+        Mesh mesh2 = new Mesh();
         hit = Physics.SphereCastAll(transform.position, 2, Vector3.forward, 2);
         //
         // edges.Add(new Vector2(2, 6));
@@ -208,7 +212,23 @@ public class MeshGen : MonoBehaviour
             MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
             //gameobject.transform.localScale = new Vector3(30, 30, 30);
             MC.GetComponent<MeshRenderer>().material = Black;
+            MC.GetComponent<MeshRenderer>().receiveShadows = false;
             MC.GetComponent<MeshFilter>().mesh = mesh;
+
+
+
+
+
+            mesh2.vertices = vertices.ToArray();
+            mesh2.triangles = tri2.ToArray();
+            mesh2.uv = uv.ToArray();
+
+
+            MC2 = new GameObject("Mesh2", typeof(MeshFilter), typeof(MeshRenderer));
+            //gameobject.transform.localScale = new Vector3(30, 30, 30);
+            MC2.GetComponent<MeshRenderer>().material = red;
+            MC2.GetComponent<MeshRenderer>().receiveShadows = false;
+            MC2.GetComponent<MeshFilter>().mesh = mesh2;
 
         }
 
@@ -399,25 +419,24 @@ public class MeshGen : MonoBehaviour
                             if (item.collider.tag == "Inactive")
                                 triIndexB += 128;
                         }
-
                     }
 
 
 
-                    vertices.Add((Corners[0] + Corners[1]) / 2);
-                    vertices.Add((Corners[1] + Corners[2]) / 2);
-                    vertices.Add((Corners[2] + Corners[3]) / 2);
-                    vertices.Add((Corners[3] + Corners[0]) / 2);
-
-                    vertices.Add((Corners[4] + Corners[5]) / 2);
-                    vertices.Add((Corners[5] + Corners[6]) / 2);
-                    vertices.Add((Corners[6] + Corners[7]) / 2);
-                    vertices.Add((Corners[7] + Corners[4]) / 2);
-
-                    vertices.Add((Corners[0] + Corners[4]) / 2);
-                    vertices.Add((Corners[5] + Corners[1]) / 2);
-                    vertices.Add((Corners[2] + Corners[6]) / 2);
-                    vertices.Add((Corners[7] + Corners[3]) / 2);
+                    vertices.Add((Corners[0] + Corners[1]) /2);
+                    vertices.Add((Corners[1] + Corners[2]) /2);
+                    vertices.Add((Corners[2] + Corners[3]) /2);
+                    vertices.Add((Corners[3] + Corners[0]) /2);
+                                                           
+                    vertices.Add((Corners[4] + Corners[5]) /2);
+                    vertices.Add((Corners[5] + Corners[6]) /2);
+                    vertices.Add((Corners[6] + Corners[7]) /2);
+                    vertices.Add((Corners[7] + Corners[4]) /2);
+                                                           
+                    vertices.Add((Corners[0] + Corners[4]) /2);
+                    vertices.Add((Corners[5] + Corners[1]) /2);
+                    vertices.Add((Corners[2] + Corners[6]) /2);
+                    vertices.Add((Corners[7] + Corners[3]) /2);
 
 
                     uv.Add(new Vector2(0, 1));
@@ -458,25 +477,27 @@ public class MeshGen : MonoBehaviour
                         }
 
                     }
-                    for (int i = 0; i < 15; i++)
+
+
+                    for (int b = 0; b < 15; b++)
                     {
 
                         int valB = 0;
                         if (vertices.Count < 11)
                         {
 
-                            valB = (TriangleTable[triIndexB, i]);
+                            valB = (TriangleTable[triIndexB, b]);
                         }
                         else
                         {
 
-                            valB = (TriangleTable[triIndexB, i] + (vertices.Count - 12));
+                            valB = (TriangleTable[triIndexB, b] + (vertices.Count - 12));
                         }
 
                         if (valB != -1)
                         {
-                            //  print(val);
-                            tri.Add(valB);
+                              print(valB);
+                            tri2.Add(valB);
                         }
 
 

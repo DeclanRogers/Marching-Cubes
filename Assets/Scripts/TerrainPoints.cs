@@ -5,7 +5,13 @@ using UnityEngine;
 public class TerrainPoints : MonoBehaviour
 {
 
-
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            gameObject.SetActive(!gameObject.activeSelf);
+        }
+    }
     void OnDrawGizmosSelected()
     {
         if (gameObject.tag == "Active")
