@@ -23,186 +23,44 @@ public class MeshGen : MonoBehaviour
     List<int> tri2 = new List<int>();
     List<Vector2> uv = new List<Vector2>();
     int rollingcount = 11;
+    public int seed = 11;
     GameObject MC;
     GameObject MC2;
     public bool SelfSetUp;
-        NoiseFilter noiseFilter = new NoiseFilter();
 
+    FastNoise fs = new FastNoise();
+
+    float[,] heightMap;
+
+    
     void Start()
     {
 
-       // int q = 0;
-       // for (int y = 0; y < MAP_Y; y++)
-       // {
-       //     for (int z = 0; z < MAP_Z; z++)
-       //     {
-       //         for (int x = 0; x < MAP_X; x++)
-       //         {
-       //             //print(noiseFilter.Evalauate(new Vector3(x, y, z)));
-       //             Instantiate(spheresActive, new Vector3(x, noiseFilter.Evalauate(new Vector3(x, y, z)), z), Quaternion.identity);
-       //             Corners[q] = new Vector3(x, noiseFilter.Evalauate(new Vector3(x, y, z)), z);
-       //             q++;
-       //         }
-       //     }
-       // }
-
-
-
-
-
+        
         Mesh mesh = new Mesh();
         Mesh mesh2 = new Mesh();
         hit = Physics.SphereCastAll(transform.position, 2, Vector3.forward, 2);
-        //
-        // edges.Add(new Vector2(2, 6));
-        // edges.Add(new Vector2(2, 3));
-        // edges.Add(new Vector2(3, 7));
-        // edges.Add(new Vector2(6, 7));
-        //
-        // edges.Add(new Vector2(0, 2));
-        // edges.Add(new Vector2(1, 3));
-        // edges.Add(new Vector2(5, 7));
-        // edges.Add(new Vector2(4, 6));
 
-
-        // List<Vector3> verts = new List<Vector3>();
-
-       // vertices.Add((Corners[0] + Corners[1]) / 2);
-       // vertices.Add((Corners[1] + Corners[2]) / 2);
-       // vertices.Add((Corners[2] + Corners[3]) / 2);
-       // vertices.Add((Corners[3] + Corners[0]) / 2);
-       //
-       // vertices.Add((Corners[4] + Corners[5]) / 2);
-       // vertices.Add((Corners[5] + Corners[6]) / 2);
-       // vertices.Add((Corners[6] + Corners[7]) / 2);
-       // vertices.Add((Corners[7] + Corners[4]) / 2);
-       //
-       // vertices.Add((Corners[0] + Corners[4]) / 2);
-       // vertices.Add((Corners[5] + Corners[1]) / 2);
-       // vertices.Add((Corners[2] + Corners[6]) / 2);
-       // vertices.Add((Corners[7] + Corners[3]) / 2);
-       //
-       // uv.Add(new Vector2(0, 1));
-       // uv.Add(new Vector2(1, 1));
-       // uv.Add(new Vector2(0, 0));
-       // uv.Add(new Vector2(1, 0));
-       //
-       // uv.Add(new Vector2(0, 1));
-       // uv.Add(new Vector2(1, 1));
-       // uv.Add(new Vector2(0, 0));
-       // uv.Add(new Vector2(1, 0));
-       //
-       // uv.Add(new Vector2(0, 1));
-       // uv.Add(new Vector2(1, 1));
-       // uv.Add(new Vector2(0, 0));
-       // uv.Add(new Vector2(1, 0));
-       //
-       // for (int i = 0; i < 15; i++)
-       // {
-       //     //print(triIndex);
-       //     int val = 0;
-       //     //if (vertices.Count < 11)
-       //     {
-       //         val = (TriangleTable[162, i]);
-       //     }
-       //     // else
-       //     // {
-       //
-       //     //val = (TriangleTable[triIndex, i] + (vertices.Count - 12));
-       //     //  }
-       //
-       //     if (val != -1)
-       //     {
-       //         print(val);
-       //         tri.Add(val);
-       //     }
-       //
-       // }
-       //
-        //triIndex = 0;
-        //
-        //transform.position = new Vector3(x, y, z);
-        //rollingcount += 11;
-    
         
-
-        /*
-                Vector3 temp;
-                temp = transform.position - new Vector3(1,1,1);
-                //hit = Physics.SphereCastAll(transform.position + new Vector3(0.5f, 0.5f, 0.5f), 0.2f, Vector3.zero, 1.1f);
-                if (Physics.SphereCast(transform.position + new Vector3(0.5f, 0.5f, 0.5f), 0.2f, Vector3.forward, out hit))
+        for (int y = 0; y < MAP_Y; y++)
+        {
+            for (int z = 0; z < MAP_Z; z++)
+            {
+                for (int x = 0; x < MAP_X; x++)
                 {
-                    print(hit.transform.gameObject.name);
-
+                    //print(Mathf.Floor(heightMap[x, z] * 10));
+                    Instantiate(spheresActive, new Vector3(x, y, z), Quaternion.identity).transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                 }
-
-                print(transform.position);
-
-
+            }
+        }
 
 
+        MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
 
-                int inactiveCount = 0;*/
-        // foreach (var item in hit)
-        // {
-        // print(item.transform.gameObject.name);
-        //
-        // }
-        //       
-        //    Corners[count] = item.transform.position;
-        //    if (item.collider.tag == "Active")
-        //    {
-        //        inactiveCount++;
-        //    }
-        //    if (count == 7)
-        //    {
-        //vertices.Add((Corners[0] + Corners[1]) / 2);
-        //vertices.Add((Corners[1] + Corners[2]) / 2);
-        //vertices.Add((Corners[2] + Corners[3]) / 2);
-        //vertices.Add((Corners[3] + Corners[0]) / 2);
-        //
-        //vertices.Add((Corners[4] + Corners[5]) / 2);
-        //vertices.Add((Corners[5] + Corners[6]) / 2);
-        //vertices.Add((Corners[6] + Corners[7]) / 2);
-        //vertices.Add((Corners[7] + Corners[4]) / 2);
-        //
-        //vertices.Add((Corners[0] + Corners[4]) / 2);
-        //vertices.Add((Corners[5] + Corners[1]) / 2);
-        //vertices.Add((Corners[2] + Corners[6]) / 2);
-        //vertices.Add((Corners[7] + Corners[3]) / 2);
-        //    }
-        //    count++;
-        //}
-
-      for (int y = 0; y < MAP_Y; y++)
-      {
-          for (int z = 0; z < MAP_Z; z++)
-          {
-              for (int x = 0; x < MAP_X; x++)
-              {
-                  Instantiate(spheresActive, new Vector3(x, y, z), Quaternion.identity).transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-              }
-          }
-      }
-
+        MC2 = new GameObject("Mesh2", typeof(MeshFilter), typeof(MeshRenderer));
         if (!SelfSetUp)
         {
             MarchingCubes();
-
-
-            // foreach (var item in vertices)
-            // {
-            //     print(item);
-            // }
-            // Vector2[] uv = new Vector2[]
-            //     { 
-            //     new Vector2(0,1),
-            //     new Vector2(1,1),
-            //     new Vector2(0,0),
-            //     new Vector2(1,0),
-            //     };
-
-            
 
             mesh.vertices = vertices.ToArray();
             mesh.triangles = tri.ToArray();
@@ -213,6 +71,8 @@ public class MeshGen : MonoBehaviour
             //gameobject.transform.localScale = new Vector3(30, 30, 30);
             MC.GetComponent<MeshRenderer>().material = Black;
             MC.GetComponent<MeshRenderer>().receiveShadows = false;
+
+            mesh.RecalculateNormals();
             MC.GetComponent<MeshFilter>().mesh = mesh;
 
 
@@ -222,6 +82,7 @@ public class MeshGen : MonoBehaviour
             mesh2.vertices = vertices.ToArray();
             mesh2.triangles = tri2.ToArray();
             mesh2.uv = uv.ToArray();
+            mesh2.RecalculateNormals();
 
 
             MC2 = new GameObject("Mesh2", typeof(MeshFilter), typeof(MeshRenderer));
@@ -232,15 +93,6 @@ public class MeshGen : MonoBehaviour
 
         }
 
-        // Instantiate(spheresInactive, Corners[0], Quaternion.identity);
-        // Instantiate(spheresActive, Corners[1], Quaternion.identity);
-        // Instantiate(spheresInactive, Corners[2], Quaternion.identity);
-        // Instantiate(spheresInactive, Corners[3], Quaternion.identity);
-        // Instantiate(spheresInactive, Corners[4], Quaternion.identity);
-        // Instantiate(spheresActive, Corners[5], Quaternion.identity);
-        // Instantiate(spheresInactive, Corners[6], Quaternion.identity);
-        // Instantiate(spheresActive, Corners[7], Quaternion.identity);
-
     }
 
     // Update is called once per frame
@@ -248,39 +100,45 @@ public class MeshGen : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            //gameObject.transform.position = new Vector3(0.5f, 0.5f, 0.5f);
-            //Mesh mesh = new Mesh();
-            //Destroy(MC);
-            //MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
-            //vertices.Clear();
-            //tri.Clear();
-            //uv.Clear();
-            //
-            //print(Time.frameCount);
-            //MarchingCubes();
-            //mesh.vertices = vertices.ToArray();
-            //mesh.triangles = tri.ToArray();
-            //mesh.uv = uv.ToArray();
-            //
-            //
-            ////  GameObject gameobject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
-            ////gameobject.transform.localScale = new Vector3(30, 30, 30);
-            //// gameobject.GetComponent<MeshRenderer>().material = Black;
-            //MC.GetComponent<MeshRenderer>().material = Black;
-            //MC.GetComponent<MeshFilter>().mesh = mesh;
+            Mesh mesh = new Mesh();
+            Mesh mesh2 = new Mesh();
 
-            
-            //for (int z = 0; z < MAP_X; z++)
-            //{
-            //    for (int x = 0; x < MAP_Z; x++)
-            //    {
-            //        for (int y = 0; y < MAP_Y; y++)
-            //        {
-            //
-            //        Instantiate(spheresActive, new Vector3(x, noiseFilter.Evalauate(new Vector3(x, y, z)), z), Quaternion.identity);
-            //        }
-            //    }
-            //}
+            mesh.Clear();
+            mesh2.Clear();
+
+            vertices.Clear();
+            tri2.Clear(); 
+            tri.Clear(); 
+            uv.Clear(); 
+            MarchingCubes();
+
+            mesh.vertices = vertices.ToArray();
+            mesh.triangles = tri.ToArray();
+            mesh.uv = uv.ToArray();
+
+
+
+            //gameobject.transform.localScale = new Vector3(30, 30, 30);
+            MC.GetComponent<MeshRenderer>().material = Black;
+            MC.GetComponent<MeshRenderer>().receiveShadows = false;
+
+            mesh.RecalculateNormals();
+            MC.GetComponent<MeshFilter>().mesh = mesh;
+
+
+
+
+
+            mesh2.vertices = vertices.ToArray();
+            mesh2.triangles = tri2.ToArray();
+            mesh2.uv = uv.ToArray();
+            mesh2.RecalculateNormals();
+
+
+            //gameobject.transform.localScale = new Vector3(30, 30, 30);
+            MC2.GetComponent<MeshRenderer>().material = red;
+            MC2.GetComponent<MeshRenderer>().receiveShadows = false;
+            MC2.GetComponent<MeshFilter>().mesh = mesh2;
 
         }
     }
@@ -294,38 +152,50 @@ public class MeshGen : MonoBehaviour
         Vector3[] Corners = new Vector3[8];
         int triIndexA = 0;
         int triIndexB = 0;
+        int xx = 0;
+        int zz = 0;
+
+        heightMap = new float[MAP_X, MAP_Z];
+        GenerateHeightMap(ref heightMap, 2, seed, 7, 0.5f, 0.5f, Vector2.zero);
+
+        GameObject[] spheres = GameObject.FindGameObjectsWithTag("Finish");
+        for (int x = 0; x < MAP_X; x++)
+        {
+            for (int z = 0; z < MAP_Z; z++)
+            {
+                foreach (var item in spheres)
+                {
+                    if (new Vector3(x, Mathf.Floor(heightMap[x, z] * 10) - 1, z) == item.transform.position)
+                    {
+                       // (0.0, 4.0, 2.0)---- - (0.0, 4.0, 2.0)
+                        print("TEE");
+                         print(item.transform.position + "-----" + new Vector3(x, Mathf.Floor(heightMap[x, z] * 10)- 1, z));
+                        item.transform.tag = "Active";
+                    }
+                }
+
+            }
+        }
+
+
         for (float y = 0.5f; y < MAP_Y - 1; y++)
         {
-            for (float z = 0.5f; z < MAP_Z -1; z++)
+            zz = 0;
+            xx = 0;
+            for (float z = 0.5f; z < MAP_Z - 1; z++)
             {
-                for (float x = 0.5f; x < MAP_X -1; x++)
+                zz++;
+                xx = 0;
+                for (float x = 0.5f; x < MAP_X - 1; x++)
                 {
+                    xx++;
                     hit = Physics.SphereCastAll(transform.position, 2, Vector3.forward, 2);
                     foreach (var item in hit)
                     {
-                        if (!SelfSetUp)
-                        {
-                            if (c < 4)
-                            {
-                                if (item.collider.tag == "Finish")
-                                {
-                                    if (Random.Range(0, 10) <= 5)
-                                    {
-                                        item.collider.tag = "Active";
-                                        c++;
-                                    }
-                                    else
-                                    {
-                                        item.collider.tag = "Inactive";
-                                    }
-                                }
-                                else
-                                {
-                                    c++;
-                                }
-                            }
 
-                            c = 0;
+                        if (item.transform.tag == "Finish")
+                        {
+                            item.transform.tag = "Inactive";
                         }
 
 
@@ -340,7 +210,6 @@ public class MeshGen : MonoBehaviour
                             if (item.collider.tag == "Inactive")
                                 triIndexB += 1;
                         }
-                        // print(transform.position + new Vector3(0.5f, -0.5f, 0.5f));
 
                         if (item.transform.position == (transform.position + new Vector3(0.5f, -0.5f, -0.5f)))
                         {
@@ -375,7 +244,6 @@ public class MeshGen : MonoBehaviour
                                 triIndexB += 8;
                         }
 
-                        //  print(transform.position + new Vector3(0.475f, -0.5f, -0.475f));
 
                         if (item.transform.position == (transform.position + new Vector3(0.5f, 0.5f, 0.5f)))
                         {
@@ -423,20 +291,20 @@ public class MeshGen : MonoBehaviour
 
 
 
-                    vertices.Add((Corners[0] + Corners[1]) /2);
-                    vertices.Add((Corners[1] + Corners[2]) /2);
-                    vertices.Add((Corners[2] + Corners[3]) /2);
-                    vertices.Add((Corners[3] + Corners[0]) /2);
-                                                           
-                    vertices.Add((Corners[4] + Corners[5]) /2);
-                    vertices.Add((Corners[5] + Corners[6]) /2);
-                    vertices.Add((Corners[6] + Corners[7]) /2);
-                    vertices.Add((Corners[7] + Corners[4]) /2);
-                                                           
-                    vertices.Add((Corners[0] + Corners[4]) /2);
-                    vertices.Add((Corners[5] + Corners[1]) /2);
-                    vertices.Add((Corners[2] + Corners[6]) /2);
-                    vertices.Add((Corners[7] + Corners[3]) /2);
+                    vertices.Add((Corners[0] + Corners[1]) / 2);
+                    vertices.Add((Corners[1] + Corners[2]) / 2);
+                    vertices.Add((Corners[2] + Corners[3]) / 2);
+                    vertices.Add((Corners[3] + Corners[0]) / 2);
+
+                    vertices.Add((Corners[4] + Corners[5]) / 2);
+                    vertices.Add((Corners[5] + Corners[6]) / 2);
+                    vertices.Add((Corners[6] + Corners[7]) / 2);
+                    vertices.Add((Corners[7] + Corners[4]) / 2);
+
+                    vertices.Add((Corners[0] + Corners[4]) / 2);
+                    vertices.Add((Corners[5] + Corners[1]) / 2);
+                    vertices.Add((Corners[2] + Corners[6]) / 2);
+                    vertices.Add((Corners[7] + Corners[3]) / 2);
 
 
                     uv.Add(new Vector2(0, 1));
@@ -496,7 +364,7 @@ public class MeshGen : MonoBehaviour
 
                         if (valB != -1)
                         {
-                              print(valB);
+                           // print(valB);
                             tri2.Add(valB);
                         }
 
@@ -510,6 +378,69 @@ public class MeshGen : MonoBehaviour
                     transform.position = new Vector3(x, y, z);
                     rollingcount += 11;
                 }
+            }
+        }
+    }
+
+
+
+    private void GenerateHeightMap(ref float[,] heightMap, float scaleBias, int seed, int octaves, float persistance, float lacunarity, Vector2 offset)
+    {
+        System.Random pRandNumGen = new System.Random(seed);
+        Vector2[] octaveOffsets = new Vector2[octaves];
+
+        for (int i = 0; i < octaves; i++)
+        {
+            float offsetX = pRandNumGen.Next(-100000, 100000) + offset.x;
+            float offsetY = pRandNumGen.Next(-100000, 100000) + offset.y;
+
+            octaveOffsets[i] = new Vector2(offsetX, offsetY);
+        }
+
+        if (scaleBias <= 0)
+            scaleBias = 0.0001f;
+
+        // Set min and max heights to max and min float values
+        float minNoiseHeight = Mathf.Infinity;
+        float maxNoiseHeight = Mathf.NegativeInfinity;
+
+        float halfSize = MAP_X / 2f;
+
+        for (int y = 0; y < MAP_X; y++)
+        {
+            for (int x = 0; x < MAP_X; x++)
+            {
+                float amplitude = 1;
+                float frequency = 1;
+                float noiseHeight = 0;
+
+                for (int o = 0; o < octaves; o++)
+                {
+                    float sampleX = (x - halfSize) / scaleBias * frequency + octaveOffsets[o].x;
+                    float sampleY = (y - halfSize) / scaleBias * frequency + octaveOffsets[o].y;
+                    float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
+                    noiseHeight += perlinValue * amplitude;
+
+                    amplitude *= persistance;
+                    frequency *= lacunarity;
+                }
+
+                // Updates the min and max noise height values
+                if (noiseHeight > maxNoiseHeight)
+                    maxNoiseHeight = noiseHeight;
+                else if (noiseHeight < minNoiseHeight)
+                    minNoiseHeight = noiseHeight;
+
+                heightMap[x, y] = noiseHeight;
+            }
+        }
+
+        for (int y = 0; y < MAP_X; y++)
+        {
+            for (int x = 0; x < MAP_X; x++)
+            {
+                // Basically a normalise function. Returns a value between 0 and 1
+                heightMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, heightMap[x, y]);
             }
         }
     }
