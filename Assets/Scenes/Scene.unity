@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 223237030}
   - component: {fileID: 223237029}
   - component: {fileID: 223237028}
+  - component: {fileID: 223237033}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -150,7 +151,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 223237027}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ec9749cdebea8343baadb42d84392f8, type: 3}
   m_Name: 
@@ -240,6 +241,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &223237033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223237027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4302cf014e861504cb8f048bfabad171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MAPSIZE_X: 15
+  MAPSIZE_Y: 5
+  MAPSIZE_Z: 15
+  seed: 1337
+  sphere: {fileID: 8633367626247148491, guid: 4b901bd4eef4a864ba7e873071bbb23c, type: 3}
+  sphere1: {fileID: 6779185894838346343, guid: 2f4dc4c9e921ff14c8821a9c66d7ad7b, type: 3}
+  peak: {fileID: 2488093426730405172, guid: 8b2c6b4cf7d54fb4ba593931149da6ce, type: 3}
+  below: {fileID: 2488093426730405172, guid: eb610b823b319f64ea27679024f352a2, type: 3}
+  SurfaceMat: {fileID: 2100000, guid: c234f53a1c2a5ef4d9e3762b5eea3e4b, type: 2}
+  HumanMade: 1
 --- !u!1 &478247714
 GameObject:
   m_ObjectHideFlags: 0
