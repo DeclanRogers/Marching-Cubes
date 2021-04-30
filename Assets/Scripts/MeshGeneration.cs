@@ -9,6 +9,13 @@ public class MeshGeneration : MonoBehaviour
     public int MAPSIZE_Z = 2;
 
 
+
+
+    public float ScaleBias = 2;
+    public int Oct = 7;
+    public float Persistance = 3.0f;
+    public float Lac = 0.7f;
+
     public GridPoint[,,] grid;
     public GameObject[,,] spheres;
     float[,] heightMap;
@@ -74,7 +81,7 @@ public class MeshGeneration : MonoBehaviour
 
         heightMap = new float[MAPSIZE_X, MAPSIZE_Z];
 
-        GenerateHeightMap(ref heightMap, 2, seed, 7, 1.5f, 0.5f, Vector2.zero);
+        GenerateHeightMap(ref heightMap, ScaleBias, seed, Oct, Persistance, Lac, Vector2.zero);
 
         for (int x = 0; x < MAPSIZE_X; x++)
         {
@@ -85,7 +92,7 @@ public class MeshGeneration : MonoBehaviour
                     grid[x, y, z].pos = new Vector3(x, y, z);
                     grid[x, y, z].active = false;
 
-                    if (y <= Mathf.Floor(heightMap[x, z] * 10 / 2) - 1)
+                    if (y <= Mathf.Floor(heightMap[x, z] * 10 ) - 1)
                     {
                         grid[x, y, z].peaked = true;
                         if (y == Mathf.Floor(heightMap[x, z] * 10) - 1)
@@ -253,28 +260,7 @@ public class MeshGeneration : MonoBehaviour
 
                     if (triIndex != 0 && triIndex != 255)
                     {
-                        for (int i = 0; i < 15; i++)
-                        {
-                            //print(triIndex);
-                            int valA = -1;
-                            if (Verts.Count < 11)
-                            {
-
-                                valA = (TriangleTable[1, i]);
-                            }
-                            else
-                            {
-
-                                valA = (TriangleTable[1, i] + (Verts.Count - 12));
-                            }
-
-                            if (valA != -1)
-                            {
-                                print(valA);
-                                Tri.Add(valA);
-                            }
-
-                        }
+                        
 
                         if (Tri.Count % 3 != 0)
                         {
@@ -330,7 +316,28 @@ public class MeshGeneration : MonoBehaviour
                         uv.Add(new Vector2(1, 0));
 
 
+                        for (int i = 0; i < 15; i++)
+                        {
+                            //print(triIndex);
+                            int valA = -1;
+                            if (Verts.Count < 11)
+                            {
 
+                                valA = (TriangleTable[triIndex, i]);
+                            }
+                            else
+                            {
+
+                                valA = (TriangleTable[triIndex, i] + (Verts.Count - 12));
+                            }
+
+                            if (valA != -1)
+                            {
+                                print(valA);
+                                Tri.Add(valA);
+                            }
+
+                        }
                     }
 
 
