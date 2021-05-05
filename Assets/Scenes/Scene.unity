@@ -262,13 +262,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4302cf014e861504cb8f048bfabad171, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ChunckSizeX: 3
-  ChunckSizeZ: 3
-  ScaleBias: 4
+  ChunckSizeX: 50
+  ChunckSizeZ: 50
+  ScaleBias: 2
   Oct: 9
   Persistance: 2
   Lac: 0.8
-  seed: 1941
+  seed: 1898
   sphere: {fileID: 8633367626247148491, guid: 4b901bd4eef4a864ba7e873071bbb23c, type: 3}
   sphere1: {fileID: 6779185894838346343, guid: 2f4dc4c9e921ff14c8821a9c66d7ad7b, type: 3}
   peak: {fileID: 2488093426730405172, guid: 8b2c6b4cf7d54fb4ba593931149da6ce, type: 3}

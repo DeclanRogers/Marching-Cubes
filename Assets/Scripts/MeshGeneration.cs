@@ -84,77 +84,39 @@ public class MeshGeneration : MonoBehaviour
         heightMap = new float[ChunckSizeX * MAPSIZE_X, ChunckSizeZ * MAPSIZE_Z];
 
         GenerateHeightMap(ref heightMap, ScaleBias, seed, Oct, Persistance, Lac, Vector2.zero);
-        int f=1;
-        int g=1;
+
         for (int CX = 0; CX < ChunckSizeX; CX++)
         {
-
             for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
             {
-                
-               // print("g " + g);
-
                 for (int x = 0; x < MAPSIZE_X; x++)
                 {
-
                     for (int y = 0; y < MAPSIZE_Y; y++)
                     {
                         for (int z = 0; z < MAPSIZE_Z; z++)
                         {
-                            grid[x, y, z, CZ, CX].pos = new Vector3(x, y, z);
-                            grid[x, y, z, CZ, CX].active = false;
-                            print((CX * 25) + x + "----" + (CZ * 25) +z);
-                            if (y <= Mathf.Floor(heightMap[(CX*25)+x, (CZ * 25)+z] * 10) - 1)
+                            grid[x, y, z, CX, CZ].pos = new Vector3((CX * 25) + x - CX, y, (CZ * 25) + z - CZ);
+                            grid[x, y, z, CX, CZ].active = false;
+                            if (y <= Mathf.Floor(heightMap[(CX * 25) + x, (CZ * 25) + z] * 10) - 1)
                             {
-                                grid[x, y, z, CZ, CX].peaked = true;
-                                if (y == Mathf.Floor(heightMap[(CX * 25) * x, (CZ * 25) * z] * 10) - 1)
+                                grid[x, y, z, CX, CZ].peaked = true;
+                                if (y == Mathf.Floor(heightMap[(CX * 25) + x, (CZ * 25) + z] * 10) - 1)
                                 {
-                                    //Instantiate(sphere, grid[x, y, z].pos, Quaternion.identity).tag = "Active";
-                                    grid[x, y, z, CZ, CX].active = true;
-                                    //Instantiate(peak, grid[x, y, z].pos, Quaternion.identity);
+                                    grid[x, y, z, CX, CZ].active = true;
                                 }
                                 else
                                 {
-                                    // Instantiate(sphere, grid[x, y, z].pos, Quaternion.identity).tag = "Active";
-                                    grid[x, y, z, CZ, CX].active = true;
-                                    //Instantiate(below, grid[x, y, z].pos, Quaternion.identity);
+                                    grid[x, y, z, CX, CZ].active = true;
                                 }
                             }
                         }
                     }
                 }
-            g += 1;
             }
-            g = 0;
-            f += 1;
         }
-
-        // if (HumanMade)
-        // {
-        //     spheres = new GameObject[MAPSIZE_X, MAPSIZE_Y, MAPSIZE_Z];
-        //     for (int x = 0; x < MAPSIZE_X; x++)
-        //     {
-        //         for (int y = 0; y < MAPSIZE_Y; y++)
-        //         {
-        //             for (int z = 0; z < MAPSIZE_Z; z++)
-        //             {
-        //                 spheres[x, y, z] = Instantiate(sphere, grid[x, y, z].pos, Quaternion.identity);
-        //
-        //             }
-        //         }
-        //     }
-        //
-        // }
 
         if (!HumanMade)
         {
-
-
-
-
-
-
-
 
             MarchingCubes();
             int x = 0;
@@ -171,7 +133,7 @@ public class MeshGeneration : MonoBehaviour
             //    c++;
             //}
             int q = 0;
-            
+
             foreach (var item in mesh)
             {
                 item.vertices = Verts[q].ToArray();
@@ -179,7 +141,7 @@ public class MeshGeneration : MonoBehaviour
                 item.uv = uv[q].ToArray();
 
                 q++;
-               
+
                 GameObject MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));
 
                 //gameobject.transform.localScale = new Vector3(30, 30, 30);
@@ -192,9 +154,40 @@ public class MeshGeneration : MonoBehaviour
         }
     }
 
+
+    private void OnDrawGizmos()
+    {
+        // for (int CX = 0; CX < ChunckSizeX; CX++)
+        // {
+        //
+        //     for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
+        //     {
+        //
+        //         // print("g " + g);
+        //
+        //         for (int x = 0; x < MAPSIZE_X; x++)
+        //         {
+        //
+        //             for (int y = 0; y < MAPSIZE_Y; y++)
+        //             {
+        //                 for (int z = 0; z < MAPSIZE_Z; z++)
+        //                 {
+        //                     grid[x, y, z, CZ, CX].pos = new Vector3((CX * 25) + x, y, (CX * 25) + z);
+        //                     
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        foreach (var item in grid)
+        {
+            Gizmos.DrawCube(item.pos, new Vector3(0.2f, 0.2f, 0.2f));
+        }
+    }
     void MarchingCubes()
     {
-        
+
         for (int CX = 0; CX < ChunckSizeX; CX++)
         {
 
@@ -202,10 +195,10 @@ public class MeshGeneration : MonoBehaviour
 
             for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
             {
-
                 List<Vector3> qq = new List<Vector3>();
                 List<Vector2> qqv = new List<Vector2>();
                 List<int> tri = new List<int>();
+
 
                 for (int y = 0; y < MAPSIZE_Y - 1; y++)
                 {
@@ -215,7 +208,7 @@ public class MeshGeneration : MonoBehaviour
                         {
                             int triIndex = 0;
 
-                            if (grid[x, y, z, CZ, CX].active)
+                            if (grid[x, y, z, CX, CZ].active)
                             {
                                 triIndex += 1;
                             }
@@ -225,7 +218,7 @@ public class MeshGeneration : MonoBehaviour
 
                             }
 
-                            if (grid[x + 1, y, z, CZ, CX].active)
+                            if (grid[x + 1, y, z, CX, CZ].active)
                             {
                                 triIndex += 2;
                             }
@@ -235,7 +228,7 @@ public class MeshGeneration : MonoBehaviour
                                 // triIndex += 2;
                             }
 
-                            if (grid[x + 1, y, z + 1, CZ, CX].active)
+                            if (grid[x + 1, y, z + 1, CX, CZ].active)
                             {
                                 triIndex += 4;
                             }
@@ -245,7 +238,7 @@ public class MeshGeneration : MonoBehaviour
 
                             }
 
-                            if (grid[x, y, z + 1, CZ, CX].active)
+                            if (grid[x, y, z + 1, CX, CZ].active)
                             {
                                 triIndex += 8;
                             }
@@ -256,7 +249,7 @@ public class MeshGeneration : MonoBehaviour
                             }
 
 
-                            if (grid[x, y + 1, z, CZ, CX].active)
+                            if (grid[x, y + 1, z, CX, CZ].active)
                             {
                                 triIndex += 16;
                             }
@@ -266,7 +259,7 @@ public class MeshGeneration : MonoBehaviour
                                 // triIndex += 16;
                             }
 
-                            if (grid[x + 1, y + 1, z, CZ, CX].active)
+                            if (grid[x + 1, y + 1, z, CX, CZ].active)
                             {
                                 triIndex += 32;
                             }
@@ -276,7 +269,7 @@ public class MeshGeneration : MonoBehaviour
 
                             }
 
-                            if (grid[x + 1, y + 1, z + 1, CZ, CX].active)
+                            if (grid[x + 1, y + 1, z + 1, CX, CZ].active)
                             {
                                 triIndex += 64;
                             }
@@ -286,7 +279,7 @@ public class MeshGeneration : MonoBehaviour
 
                             }
 
-                            if (grid[x, y + 1, z + 1, CZ, CX].active)
+                            if (grid[x, y + 1, z + 1, CX, CZ].active)
                             {
                                 triIndex += 128;
                             }
@@ -302,17 +295,17 @@ public class MeshGeneration : MonoBehaviour
 
                                 if (Tri.Count % 3 != 0)
                                 {
-                                  //  print(1);
+                                    //  print(1);
                                 }
-                                Corners[0] = grid[x, y, z, CZ, CX].pos;
-                                Corners[1] = grid[x + 1, y, z, CZ, CX].pos;
-                                Corners[2] = grid[x + 1, y, z + 1, CZ, CX].pos;
-                                Corners[3] = grid[x, y, z + 1, CZ, CX].pos;
+                                Corners[0] = grid[x, y, z, CX, CZ].pos;
+                                Corners[1] = grid[x + 1, y, z, CX, CZ].pos;
+                                Corners[2] = grid[x + 1, y, z + 1, CX, CZ].pos;
+                                Corners[3] = grid[x, y, z + 1, CX, CZ].pos;
 
-                                Corners[4] = grid[x, y + 1, z, CZ, CX].pos;
-                                Corners[5] = grid[x + 1, y + 1, z, CZ, CX].pos;
-                                Corners[6] = grid[x + 1, y + 1, z + 1, CZ, CX].pos;
-                                Corners[7] = grid[x, y + 1, z + 1, CZ, CX].pos;
+                                Corners[4] = grid[x, y + 1, z, CX, CZ].pos;
+                                Corners[5] = grid[x + 1, y + 1, z, CX, CZ].pos;
+                                Corners[6] = grid[x + 1, y + 1, z + 1, CX, CZ].pos;
+                                Corners[7] = grid[x, y + 1, z + 1, CX, CZ].pos;
 
 
 
@@ -331,8 +324,8 @@ public class MeshGeneration : MonoBehaviour
                                 qq.Add((Corners[2] + Corners[6]) / 2);
                                 qq.Add((Corners[7] + Corners[3]) / 2);
 
-                                Verts.Add(qq);
-
+                                // Verts.Add(qq);
+                                // qq = new List<Vector3>();
 
 
                                 qqv.Add(new Vector2(0, 1));
@@ -349,7 +342,8 @@ public class MeshGeneration : MonoBehaviour
                                 qqv.Add(new Vector2(1, 0));
 
 
-                                uv.Add(qqv);
+                                // uv.Add(qqv);
+                                // qqv = new List<Vector2>();
 
                                 for (int i = 0; i < 15; i++)
                                 {
@@ -368,16 +362,20 @@ public class MeshGeneration : MonoBehaviour
 
                                     if (valA != -1)
                                     {
-                                       // print(valA);
+                                        // print(valA);
                                         tri.Add(valA);
                                     }
 
                                 }
-                                Tri.Add(tri);
                             }
                         }
                     }
                 }
+
+                Tri.Add(tri);
+                Verts.Add(qq);
+                uv.Add(qqv);
+                // tri = new List<int>();
                 mesh.Add(new Mesh());
             }
         }
@@ -405,11 +403,11 @@ public class MeshGeneration : MonoBehaviour
         float minNoiseHeight = Mathf.Infinity;
         float maxNoiseHeight = Mathf.NegativeInfinity;
 
-        float halfSize = MAPSIZE_X / 2f;
+        float halfSize = MAPSIZE_X * ChunckSizeX / 2f;
 
-        for (int y = 0; y < MAPSIZE_X; y++)
+        for (int y = 0; y < MAPSIZE_X * ChunckSizeX; y++)
         {
-            for (int x = 0; x < MAPSIZE_X; x++)
+            for (int x = 0; x < MAPSIZE_X * ChunckSizeX; x++)
             {
                 float amplitude = 1;
                 float frequency = 1;
@@ -436,9 +434,9 @@ public class MeshGeneration : MonoBehaviour
             }
         }
 
-        for (int y = 0; y < MAPSIZE_X; y++)
+        for (int y = 0; y < MAPSIZE_X * ChunckSizeX; y++)
         {
-            for (int x = 0; x < MAPSIZE_X; x++)
+            for (int x = 0; x < MAPSIZE_X * ChunckSizeX; x++)
             {
                 // Basically a normalise function. Returns a value between 0 and 1
                 heightMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, heightMap[x, y]);
