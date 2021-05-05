@@ -4,19 +4,21 @@ using UnityEngine;
 
 public class MeshGeneration : MonoBehaviour
 {
-    public int MAPSIZE_X = 2;
-    public int MAPSIZE_Y = 2;
-    public int MAPSIZE_Z = 2;
+
+    int MAPSIZE_X = 25;
+    int MAPSIZE_Y = 10;
+    int MAPSIZE_Z = 25;
 
 
-
+    public int ChunckSizeX = 3;
+    public int ChunckSizeZ = 3;
 
     public float ScaleBias = 2;
     public int Oct = 7;
     public float Persistance = 3.0f;
     public float Lac = 0.7f;
 
-    public GridPoint[,,] grid;
+    public GridPoint[,,,,] grid;
     public GameObject[,,] spheres;
     float[,] heightMap;
     public int seed = 1337;
@@ -25,110 +27,125 @@ public class MeshGeneration : MonoBehaviour
     public GameObject sphere1;
     public GameObject peak;
     public GameObject below;
-
+    List<Mesh> mesh = new List<Mesh>();
 
     Vector3[] Corners = new Vector3[8];
-    List<Vector3> Verts = new List<Vector3>();
-    List<int> Tri = new List<int>();
-    List<Vector2> uv = new List<Vector2>();
+    List<List<Vector3>> Verts = new List<List<Vector3>>();
+    List<List<int>> Tri = new List<List<int>>();
+    List<List<Vector2>> uv = new List<List<Vector2>>();
     public Material SurfaceMat;
     public bool HumanMade = true;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            for (int x = 0; x < MAPSIZE_X; x++)
-            {
-                for (int y = 0; y < MAPSIZE_Y; y++)
-                {
-                    for (int z = 0; z < MAPSIZE_Z; z++)
-                    {
-                       
-                        if (spheres[x, y, z].GetComponent<TerrainPoints>().enabled)
-                        {
-                            grid[x, y, z].active = true;
-                        }
-                        
+    /* private void Update()
+     {
+         if (Input.GetKeyDown(KeyCode.Space))
+         {
+             for (int x = 0; x < MAPSIZE_X; x++)
+             {
+                 for (int y = 0; y < MAPSIZE_Y; y++)
+                 {
+                     for (int z = 0; z < MAPSIZE_Z; z++)
+                     {
 
-                    }
-                }
-            }
-            MarchingCubes();
-            Mesh mesh = new Mesh();
-            mesh.Clear();
-            mesh.vertices = Verts.ToArray();
-            mesh.triangles = Tri.ToArray();
-            mesh.uv = uv.ToArray();
+                         if (spheres[x, y, z].GetComponent<TerrainPoints>().enabled)
+                         {
+                             grid[x, y, z].active = true;
+                         }
 
 
-            GameObject MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
-            //gameobject.transform.localScale = new Vector3(30, 30, 30);
-            MC.GetComponent<MeshRenderer>().material = SurfaceMat;
-            MC.GetComponent<MeshRenderer>().receiveShadows = false;
+                     }
+                 }
+             }
+             MarchingCubes();
+             Mesh mesh = new Mesh();
+             mesh.Clear();
+             mesh.vertices = Verts.ToArray();
+             mesh.triangles = Tri.ToArray();
+             mesh.uv = uv.ToArray();
 
-            mesh.RecalculateNormals();
-            MC.GetComponent<MeshFilter>().mesh = mesh;
-        }
+
+             GameObject MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
+             //gameobject.transform.localScale = new Vector3(30, 30, 30);
+             MC.GetComponent<MeshRenderer>().material = SurfaceMat;
+             MC.GetComponent<MeshRenderer>().receiveShadows = false;
+
+             mesh.RecalculateNormals();
+             MC.GetComponent<MeshFilter>().mesh = mesh;
+         }
 
 
-    }
+     }*/
 
 
     void Start()
     {
-        grid = new GridPoint[MAPSIZE_X, MAPSIZE_Y, MAPSIZE_Z];
+        grid = new GridPoint[MAPSIZE_X, MAPSIZE_Y, MAPSIZE_Z, ChunckSizeX, ChunckSizeZ];
 
-        heightMap = new float[MAPSIZE_X, MAPSIZE_Z];
+        heightMap = new float[ChunckSizeX * MAPSIZE_X, ChunckSizeZ * MAPSIZE_Z];
 
         GenerateHeightMap(ref heightMap, ScaleBias, seed, Oct, Persistance, Lac, Vector2.zero);
-
-        for (int x = 0; x < MAPSIZE_X; x++)
+        int f=1;
+        int g=1;
+        for (int CX = 0; CX < ChunckSizeX; CX++)
         {
-            for (int y = 0; y < MAPSIZE_Y; y++)
-            {
-                for (int z = 0; z < MAPSIZE_Z; z++)
-                {
-                    grid[x, y, z].pos = new Vector3(x, y, z);
-                    grid[x, y, z].active = false;
 
-                    if (y <= Mathf.Floor(heightMap[x, z] * 10 ) - 1)
-                    {
-                        grid[x, y, z].peaked = true;
-                        if (y == Mathf.Floor(heightMap[x, z] * 10) - 1)
-                        {
-                            //Instantiate(sphere, grid[x, y, z].pos, Quaternion.identity).tag = "Active";
-                            grid[x, y, z].active = true;
-                            //Instantiate(peak, grid[x, y, z].pos, Quaternion.identity);
-                        }
-                        else
-                        {
-                            // Instantiate(sphere, grid[x, y, z].pos, Quaternion.identity).tag = "Active";
-                            grid[x, y, z].active = true;
-                            //Instantiate(below, grid[x, y, z].pos, Quaternion.identity);
-                        }
-                    }
-                }
-            }
-        }
-
-            if (HumanMade)
+            for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
             {
-                spheres = new GameObject[MAPSIZE_X, MAPSIZE_Y, MAPSIZE_Z];
+                
+               // print("g " + g);
+
                 for (int x = 0; x < MAPSIZE_X; x++)
                 {
+
                     for (int y = 0; y < MAPSIZE_Y; y++)
                     {
                         for (int z = 0; z < MAPSIZE_Z; z++)
                         {
-                            spheres[x,y,z] = Instantiate(sphere, grid[x, y, z].pos, Quaternion.identity);
-
+                            grid[x, y, z, CZ, CX].pos = new Vector3(x, y, z);
+                            grid[x, y, z, CZ, CX].active = false;
+                            print((CX * 25) + x + "----" + (CZ * 25) +z);
+                            if (y <= Mathf.Floor(heightMap[(CX*25)+x, (CZ * 25)+z] * 10) - 1)
+                            {
+                                grid[x, y, z, CZ, CX].peaked = true;
+                                if (y == Mathf.Floor(heightMap[(CX * 25) * x, (CZ * 25) * z] * 10) - 1)
+                                {
+                                    //Instantiate(sphere, grid[x, y, z].pos, Quaternion.identity).tag = "Active";
+                                    grid[x, y, z, CZ, CX].active = true;
+                                    //Instantiate(peak, grid[x, y, z].pos, Quaternion.identity);
+                                }
+                                else
+                                {
+                                    // Instantiate(sphere, grid[x, y, z].pos, Quaternion.identity).tag = "Active";
+                                    grid[x, y, z, CZ, CX].active = true;
+                                    //Instantiate(below, grid[x, y, z].pos, Quaternion.identity);
+                                }
+                            }
                         }
                     }
                 }
-
+            g += 1;
             }
-            
+            g = 0;
+            f += 1;
+        }
+
+        // if (HumanMade)
+        // {
+        //     spheres = new GameObject[MAPSIZE_X, MAPSIZE_Y, MAPSIZE_Z];
+        //     for (int x = 0; x < MAPSIZE_X; x++)
+        //     {
+        //         for (int y = 0; y < MAPSIZE_Y; y++)
+        //         {
+        //             for (int z = 0; z < MAPSIZE_Z; z++)
+        //             {
+        //                 spheres[x, y, z] = Instantiate(sphere, grid[x, y, z].pos, Quaternion.identity);
+        //
+        //             }
+        //         }
+        //     }
+        //
+        // }
+
         if (!HumanMade)
         {
 
@@ -136,11 +153,12 @@ public class MeshGeneration : MonoBehaviour
 
 
 
-                
-            
+
+
+
             MarchingCubes();
-            Mesh mesh = new Mesh();
-            int c = 0;
+            int x = 0;
+            int z = 0;
             //foreach (var item in Verts)
             //{
             //    Instantiate(sphere, item, Quaternion.identity).name = c.ToString();
@@ -152,196 +170,215 @@ public class MeshGeneration : MonoBehaviour
             //    Instantiate(sphere1, item, Quaternion.identity).name = c.ToString();
             //    c++;
             //}
-            mesh.vertices = Verts.ToArray();
-            mesh.triangles = Tri.ToArray();
-            mesh.uv = uv.ToArray();
+            int q = 0;
+            
+            foreach (var item in mesh)
+            {
+                item.vertices = Verts[q].ToArray();
+                item.triangles = Tri[q].ToArray();
+                item.uv = uv[q].ToArray();
 
+                q++;
+               
+                GameObject MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));
 
-            GameObject MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
-            //gameobject.transform.localScale = new Vector3(30, 30, 30);
-            MC.GetComponent<MeshRenderer>().material = SurfaceMat;
-            MC.GetComponent<MeshRenderer>().receiveShadows = false;
-
-            mesh.RecalculateNormals();
-            MC.GetComponent<MeshFilter>().mesh = mesh;
+                //gameobject.transform.localScale = new Vector3(30, 30, 30);
+                MC.GetComponent<MeshRenderer>().material = SurfaceMat;
+                MC.GetComponent<MeshRenderer>().receiveShadows = false;
+                MC.GetComponent<MeshCollider>().sharedMesh = item;
+                item.RecalculateNormals();
+                MC.GetComponent<MeshFilter>().mesh = item;
+            }
         }
     }
 
     void MarchingCubes()
     {
-        for (int y = 0; y < MAPSIZE_Y-1; y++)
+        
+        for (int CX = 0; CX < ChunckSizeX; CX++)
         {
-            for (int z = 0; z < MAPSIZE_Z-1 ; z++)
+
+
+
+            for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
             {
-                for (int x = 0; x < MAPSIZE_X -1; x++)
+
+                List<Vector3> qq = new List<Vector3>();
+                List<Vector2> qqv = new List<Vector2>();
+                List<int> tri = new List<int>();
+
+                for (int y = 0; y < MAPSIZE_Y - 1; y++)
                 {
-                    int triIndex = 0;
-
-                    if (grid[x, y, z].active)
+                    for (int z = 0; z < MAPSIZE_Z - 1; z++)
                     {
-                        triIndex += 1;
-                    }
-                    else
-                    { 
-                     //   triIndex += 1;
-                    
-                    }
-
-                    if (grid[x + 1, y, z].active)
-                    {
-                        triIndex += 2;
-                    }
-                    else
-                    {
-
-                       // triIndex += 2;
-                    }
-
-                    if (grid[x+1, y, z + 1].active)
-                    {
-                        triIndex += 4;
-                    }
-                    else
-                    {
-                       // triIndex += 4;
-
-                    }
-
-                    if (grid[x, y, z + 1].active)
-                    {
-                        triIndex += 8;
-                    }
-                    else
-                    {
-                       // triIndex += 8;
-
-                    }
-
-
-                    if (grid[x, y + 1, z].active)
-                    {
-                        triIndex += 16;
-                    }
-                    else
-                    {
-
-                       // triIndex += 16;
-                    }
-
-                    if (grid[x + 1, y + 1, z].active)
-                    {
-                        triIndex += 32;
-                    }
-                    else
-                    {
-                       // triIndex += 32;
-
-                    }
-
-                    if (grid[x+1, y + 1, z + 1].active)
-                    {
-                        triIndex += 64;
-                    }
-                    else
-                    {
-                      //  triIndex += 64;
-
-                    }
-
-                    if (grid[x, y + 1, z + 1].active)
-                    {
-                        triIndex += 128;
-                    }
-                    else
-                    {
-                     //   triIndex += 128;
-
-                    }
-
-                    if (triIndex != 0 && triIndex != 255)
-                    {
-                        
-
-                        if (Tri.Count % 3 != 0)
+                        for (int x = 0; x < MAPSIZE_X - 1; x++)
                         {
-                            print(1);
-                        }
-                        Corners[0] = grid[x, y, z].pos;
-                        Corners[1] = grid[x + 1, y, z].pos;
-                        Corners[2] = grid[x + 1, y, z + 1].pos;
-                        Corners[3] = grid[x, y, z + 1].pos;
+                            int triIndex = 0;
 
-                        Corners[4] = grid[x, y + 1, z].pos;
-                        Corners[5] = grid[x + 1, y + 1, z].pos;
-                        Corners[6] = grid[x + 1, y + 1, z + 1].pos;
-                        Corners[7] = grid[x, y + 1, z + 1].pos;
-
-
-                        
-
-
-
-                        Verts.Add((Corners[0] + Corners[1]) / 2);
-                        Verts.Add((Corners[1] + Corners[2]) / 2);
-                        Verts.Add((Corners[2] + Corners[3]) / 2);
-                        Verts.Add((Corners[3] + Corners[0]) / 2);
-
-                        Verts.Add((Corners[4] + Corners[5]) / 2);
-                        Verts.Add((Corners[5] + Corners[6]) / 2);
-                        Verts.Add((Corners[6] + Corners[7]) / 2);
-                        Verts.Add((Corners[7] + Corners[4]) / 2);
-
-                        Verts.Add((Corners[0] + Corners[4]) / 2);
-                        Verts.Add((Corners[5] + Corners[1]) / 2);
-                        Verts.Add((Corners[2] + Corners[6]) / 2);
-                        Verts.Add((Corners[7] + Corners[3]) / 2);
-                        
-
-
-
-
-                        uv.Add(new Vector2(0, 1));
-                        uv.Add(new Vector2(1, 1));
-                        uv.Add(new Vector2(0, 0));
-                        uv.Add(new Vector2(1, 0));
-
-                        uv.Add(new Vector2(0, 1));
-                        uv.Add(new Vector2(1, 1));
-                        uv.Add(new Vector2(0, 0));
-                        uv.Add(new Vector2(1, 0));
-
-                        uv.Add(new Vector2(0, 1));
-                        uv.Add(new Vector2(1, 1));
-                        uv.Add(new Vector2(0, 0));
-                        uv.Add(new Vector2(1, 0));
-
-
-                        for (int i = 0; i < 15; i++)
-                        {
-                            //print(triIndex);
-                            int valA = -1;
-                            if (Verts.Count < 11)
+                            if (grid[x, y, z, CZ, CX].active)
                             {
+                                triIndex += 1;
+                            }
+                            else
+                            {
+                                //   triIndex += 1;
 
-                                valA = (TriangleTable[triIndex, i]);
+                            }
+
+                            if (grid[x + 1, y, z, CZ, CX].active)
+                            {
+                                triIndex += 2;
                             }
                             else
                             {
 
-                                valA = (TriangleTable[triIndex, i] + (Verts.Count - 12));
+                                // triIndex += 2;
                             }
 
-                            if (valA != -1)
+                            if (grid[x + 1, y, z + 1, CZ, CX].active)
                             {
-                                print(valA);
-                                Tri.Add(valA);
+                                triIndex += 4;
+                            }
+                            else
+                            {
+                                // triIndex += 4;
+
                             }
 
+                            if (grid[x, y, z + 1, CZ, CX].active)
+                            {
+                                triIndex += 8;
+                            }
+                            else
+                            {
+                                // triIndex += 8;
+
+                            }
+
+
+                            if (grid[x, y + 1, z, CZ, CX].active)
+                            {
+                                triIndex += 16;
+                            }
+                            else
+                            {
+
+                                // triIndex += 16;
+                            }
+
+                            if (grid[x + 1, y + 1, z, CZ, CX].active)
+                            {
+                                triIndex += 32;
+                            }
+                            else
+                            {
+                                // triIndex += 32;
+
+                            }
+
+                            if (grid[x + 1, y + 1, z + 1, CZ, CX].active)
+                            {
+                                triIndex += 64;
+                            }
+                            else
+                            {
+                                //  triIndex += 64;
+
+                            }
+
+                            if (grid[x, y + 1, z + 1, CZ, CX].active)
+                            {
+                                triIndex += 128;
+                            }
+                            else
+                            {
+                                //   triIndex += 128;
+
+                            }
+
+                            if (triIndex != 0 && triIndex != 255)
+                            {
+                                //print(triIndex);
+
+                                if (Tri.Count % 3 != 0)
+                                {
+                                  //  print(1);
+                                }
+                                Corners[0] = grid[x, y, z, CZ, CX].pos;
+                                Corners[1] = grid[x + 1, y, z, CZ, CX].pos;
+                                Corners[2] = grid[x + 1, y, z + 1, CZ, CX].pos;
+                                Corners[3] = grid[x, y, z + 1, CZ, CX].pos;
+
+                                Corners[4] = grid[x, y + 1, z, CZ, CX].pos;
+                                Corners[5] = grid[x + 1, y + 1, z, CZ, CX].pos;
+                                Corners[6] = grid[x + 1, y + 1, z + 1, CZ, CX].pos;
+                                Corners[7] = grid[x, y + 1, z + 1, CZ, CX].pos;
+
+
+
+
+
+                                qq.Add((Corners[0] + Corners[1]) / 2);
+                                qq.Add((Corners[1] + Corners[2]) / 2);
+                                qq.Add((Corners[2] + Corners[3]) / 2);
+                                qq.Add((Corners[3] + Corners[0]) / 2);
+                                qq.Add((Corners[4] + Corners[5]) / 2);
+                                qq.Add((Corners[5] + Corners[6]) / 2);
+                                qq.Add((Corners[6] + Corners[7]) / 2);
+                                qq.Add((Corners[7] + Corners[4]) / 2);
+                                qq.Add((Corners[0] + Corners[4]) / 2);
+                                qq.Add((Corners[5] + Corners[1]) / 2);
+                                qq.Add((Corners[2] + Corners[6]) / 2);
+                                qq.Add((Corners[7] + Corners[3]) / 2);
+
+                                Verts.Add(qq);
+
+
+
+                                qqv.Add(new Vector2(0, 1));
+                                qqv.Add(new Vector2(1, 1));
+                                qqv.Add(new Vector2(0, 0));
+                                qqv.Add(new Vector2(1, 0));
+                                qqv.Add(new Vector2(0, 1));
+                                qqv.Add(new Vector2(1, 1));
+                                qqv.Add(new Vector2(0, 0));
+                                qqv.Add(new Vector2(1, 0));
+                                qqv.Add(new Vector2(0, 1));
+                                qqv.Add(new Vector2(1, 1));
+                                qqv.Add(new Vector2(0, 0));
+                                qqv.Add(new Vector2(1, 0));
+
+
+                                uv.Add(qqv);
+
+                                for (int i = 0; i < 15; i++)
+                                {
+                                    //print(triIndex);
+                                    int valA = -1;
+                                    if (qq.Count < 11)
+                                    {
+
+                                        valA = (TriangleTable[triIndex, i]);
+                                    }
+                                    else
+                                    {
+
+                                        valA = (TriangleTable[triIndex, i] + (qq.Count - 12));
+                                    }
+
+                                    if (valA != -1)
+                                    {
+                                       // print(valA);
+                                        tri.Add(valA);
+                                    }
+
+                                }
+                                Tri.Add(tri);
+                            }
                         }
                     }
-
-
                 }
+                mesh.Add(new Mesh());
             }
         }
     }
