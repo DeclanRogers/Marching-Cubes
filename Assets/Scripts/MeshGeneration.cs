@@ -347,8 +347,23 @@ public class MeshGeneration : MonoBehaviour
 
                                     if (valA != -1)
                                     {
-                                        // print(valA);
+                                        int index = 0;
+                                        bool matched = false;
+                                        foreach (var item in verts)
+                                        {
+                                            if (item == verts[valA])
+                                            {
+                                                tri.Add(index);
+                                                matched = true;
+                                                print(1);
+                                                break;
+                                            }
+                                            index++;
+                                        }
+                                        if (!matched)
+                                        { 
                                         tri.Add(valA);
+                                        }
                                     }
 
                                 }
@@ -515,10 +530,25 @@ public class MeshGeneration : MonoBehaviour
 
                             if (valA != -1)
                             {
-                                // print(valA);
-                                tri.Add(valA);
-                            }
+                                int index = 0;
+                                bool matched = false;
+                                foreach (var item in verts)
+                                {
+                                    if (item == verts[valA])
+                                    {
+                                        tri.Add(index);
+                                        matched = true;
+                                        print(1);
+                                        break;
+                                    }
+                                    index++;
+                                }
+                                if (!matched)
+                                {
+                                    tri.Add(valA);
+                                }
 
+                            }
                         }
                     }
                 }
