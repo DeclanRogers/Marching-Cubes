@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class MeshGeneration : MonoBehaviour
 {
-
-    int MAPSIZE_X = 25;
-    int MAPSIZE_Y = 10;
-    int MAPSIZE_Z = 25;
+    [HideInInspector]
+    public int MAPSIZE_X = 25;
+    [HideInInspector]
+    public int MAPSIZE_Y = 150;
+    [HideInInspector]
+    public int MAPSIZE_Z = 25;
 
 
     public int ChunckSizeX = 3;
@@ -18,7 +20,9 @@ public class MeshGeneration : MonoBehaviour
     public float Persistance = 3.0f;
     public float Lac = 0.7f;
 
+
     public GridPoint[,,,,] grid;
+
     public GameObject[,,] spheres;
     float[,] heightMap;
     public int seed = 1337;
@@ -27,12 +31,17 @@ public class MeshGeneration : MonoBehaviour
     public GameObject sphere1;
     public GameObject peak;
     public GameObject below;
-    List<Mesh> mesh = new List<Mesh>();
+
+    [HideInInspector]
+    public List<Mesh> mesh = new List<Mesh>();
 
     Vector3[] Corners = new Vector3[8];
-    List<List<Vector3>> Verts = new List<List<Vector3>>();
-    List<List<int>> Tri = new List<List<int>>();
-    List<List<Vector2>> uv = new List<List<Vector2>>();
+    [HideInInspector]
+    public List<List<Vector3>> Verts = new List<List<Vector3>>();
+    [HideInInspector]
+    public List<List<int>> Tri = new List<List<int>>();
+    [HideInInspector]
+    public List<List<Vector2>> uv = new List<List<Vector2>>();
     public Material SurfaceMat;
     public bool HumanMade = true;
 
@@ -99,14 +108,14 @@ public class MeshGeneration : MonoBehaviour
                             grid[x, y, z, CX, CZ].active = false;
                             grid[x, y, z, CX, CZ].peaked = false;
 
-                            grid[x, y, z, CX, CZ].hm = new Vector3((CX * 25) + x, (CZ * 25) + z, heightMap[(CX * 25) + x, (CZ * 25) + z]);
-                            if (y <= Mathf.Floor(heightMap[(CX * 25) + x, (CZ * 25) + z] * 10.0f)-1)
+                            grid[x, y, z, CX, CZ].hm = new Vector3((CX * 25) + x, (CZ * 25) + z, heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z]);
+                            if (y <= Mathf.Floor(heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z] * 10.9f) - 2)
                             {
                                 grid[x, y, z, CX, CZ].active = true;
-                                if (y == Mathf.Floor(heightMap[(CX * 25) + x, (CZ * 25) + z] * 10.0f)-1)
+                                if (y == Mathf.Floor(heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z] * 10.0f) - 2)
                                 {
 
-                                grid[x, y, z, CX, CZ].peaked = true;
+                                    grid[x, y, z, CX, CZ].peaked = true;
 
                                 }
 
@@ -116,18 +125,18 @@ public class MeshGeneration : MonoBehaviour
                 }
             }
         }
-        foreach (var item in grid)
-        {
-            if (item.peaked)
-            {
-                Instantiate(sphere1, item.pos, Quaternion.identity).name = item.hm.ToString();
-            }
-        }
+        // foreach (var item in grid)
+        // {
+        //     if (item.peaked)
+        //     {
+        //         Instantiate(sphere1, item.pos, Quaternion.identity).name = item.hm.ToString();
+        //     }
+        // }
 
-       //print(grid[0, 5, 1, 1, 1].peaked);
-       //Instantiate(sphere1, grid[0, 5, 1, 1, 1].pos, Quaternion.identity);
-       //print(grid[0, 4, 1, 1, 1].peaked);
-       //Instantiate(sphere, grid[0, 4, 1, 1, 1].pos, Quaternion.identity);
+        //print(grid[0, 5, 1, 1, 1].peaked);
+        //Instantiate(sphere1, grid[0, 5, 1, 1, 1].pos, Quaternion.identity);
+        //print(grid[0, 4, 1, 1, 1].peaked);
+        //Instantiate(sphere, grid[0, 4, 1, 1, 1].pos, Quaternion.identity);
         if (!HumanMade)
         {
 
@@ -145,6 +154,7 @@ public class MeshGeneration : MonoBehaviour
 
                 GameObject MC = new GameObject("Mesh" + q, typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));
 
+                MC.gameObject.tag = "Ground";
                 MC.GetComponent<MeshRenderer>().material = SurfaceMat;
                 MC.GetComponent<MeshRenderer>().receiveShadows = false;
                 MC.GetComponent<MeshCollider>().sharedMesh = item;
@@ -157,29 +167,31 @@ public class MeshGeneration : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-       // for (int i = 0; i < 10; i++)
+
+
+        // for (int i = 0; i < 10; i++)
+        // {
+        //     if (grid[0, i, 1, 1, 1].active)
+        //     {
+        //         Gizmos.color = Color.blue;
+        //         Gizmos.DrawCube(grid[0, i, 1, 1, 1].pos, new Vector3(0.4f, 0.4f, 0.4f));
+        //     }
+        //     else
+        //     {
+        //         Gizmos.color = Color.grey;
+        //         Gizmos.DrawCube(grid[0, i, 1, 1, 1].pos, new Vector3(0.4f, 0.4f, 0.4f));
+        //     }
+        // }
+
+       // foreach (var item in grid)
        // {
-       //     if (grid[0, i, 1, 1, 1].active)
+       //     if (item.peaked || item.active)
        //     {
-       //         Gizmos.color = Color.blue;
-       //         Gizmos.DrawCube(grid[0, i, 1, 1, 1].pos, new Vector3(0.4f, 0.4f, 0.4f));
-       //     }
-       //     else
-       //     {
-       //         Gizmos.color = Color.grey;
-       //         Gizmos.DrawCube(grid[0, i, 1, 1, 1].pos, new Vector3(0.4f, 0.4f, 0.4f));
+       //         Gizmos.color = Color.green;
+       //         Gizmos.DrawSphere(item.pos, 0.2f);
+       //         // print(item.pos);
        //     }
        // }
-
-        foreach (var item in grid)
-        {
-            if (item.peaked)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawSphere(item.pos, 0.2f);
-               // print(item.pos);
-            }
-        }
     }
     void MarchingCubes()
     {
@@ -354,6 +366,177 @@ public class MeshGeneration : MonoBehaviour
         }
     }
 
+    public Mesh MarchingCubesUpdate(int CX, int CZ)
+    {
+        List<Vector3> verts = new List<Vector3>();
+        List<Vector2> uvs = new List<Vector2>();
+        List<int> tri = new List<int>();
+
+
+
+
+        for (int y = 0; y < MAPSIZE_Y - 1; y++)
+        {
+            for (int z = 0; z < MAPSIZE_Z - 1; z++)
+            {
+                for (int x = 0; x < MAPSIZE_X - 1; x++)
+                {
+                    int triIndex = 0;
+
+
+                    // if (grid[x, y, z, CX, CZ].peaked)
+                    // {
+                    //     Instantiate(sphere1, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
+                    // }
+
+                    // if (x == 1 || x == 23 || x == 0)
+                    // {
+                    //     if (x == 0)
+                    //     {
+                    //         Instantiate(sphere1, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
+                    //     }
+                    //     else
+                    //     {
+                    //         Instantiate(sphere, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
+                    //     }
+                    //
+                    // }
+
+
+                    // if (z == 0)
+                    // {
+                    //     Instantiate(sphere1, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
+                    //
+                    // }
+
+                    if (grid[x, y, z, CX, CZ].active)
+                    {
+                        triIndex += 1;
+                    }
+
+                    if (grid[x + 1, y, z, CX, CZ].active)
+                    {
+                        triIndex += 2;
+                    }
+
+                    if (grid[x + 1, y, z + 1, CX, CZ].active)
+                    {
+                        triIndex += 4;
+                    }
+
+                    if (grid[x, y, z + 1, CX, CZ].active)
+                    {
+                        triIndex += 8;
+                    }
+
+
+                    if (grid[x, y + 1, z, CX, CZ].active)
+                    {
+                        triIndex += 16;
+                    }
+
+                    if (grid[x + 1, y + 1, z, CX, CZ].active)
+                    {
+                        triIndex += 32;
+                    }
+
+                    if (grid[x + 1, y + 1, z + 1, CX, CZ].active)
+                    {
+                        triIndex += 64;
+                    }
+
+                    if (grid[x, y + 1, z + 1, CX, CZ].active)
+                    {
+                        triIndex += 128;
+                    }
+
+                    if (triIndex != 0 && triIndex != 255)
+                    {
+
+                        Corners[0] = grid[x, y, z, CX, CZ].pos;
+                        Corners[1] = grid[x + 1, y, z, CX, CZ].pos;
+                        Corners[2] = grid[x + 1, y, z + 1, CX, CZ].pos;
+                        Corners[3] = grid[x, y, z + 1, CX, CZ].pos;
+
+                        Corners[4] = grid[x, y + 1, z, CX, CZ].pos;
+                        Corners[5] = grid[x + 1, y + 1, z, CX, CZ].pos;
+                        Corners[6] = grid[x + 1, y + 1, z + 1, CX, CZ].pos;
+                        Corners[7] = grid[x, y + 1, z + 1, CX, CZ].pos;
+
+
+                        verts.Add((Corners[0] + Corners[1]) / 2);
+                        verts.Add((Corners[1] + Corners[2]) / 2);
+                        verts.Add((Corners[2] + Corners[3]) / 2);
+                        verts.Add((Corners[3] + Corners[0]) / 2);
+                        verts.Add((Corners[4] + Corners[5]) / 2);
+                        verts.Add((Corners[5] + Corners[6]) / 2);
+                        verts.Add((Corners[6] + Corners[7]) / 2);
+                        verts.Add((Corners[7] + Corners[4]) / 2);
+                        verts.Add((Corners[0] + Corners[4]) / 2);
+                        verts.Add((Corners[5] + Corners[1]) / 2);
+                        verts.Add((Corners[2] + Corners[6]) / 2);
+                        verts.Add((Corners[7] + Corners[3]) / 2);
+
+                        // Verts.Add(qq);
+                        // qq = new List<Vector3>();
+
+
+                        uvs.Add(new Vector2(0, 1));
+                        uvs.Add(new Vector2(1, 1));
+                        uvs.Add(new Vector2(0, 0));
+                        uvs.Add(new Vector2(1, 0));
+                        uvs.Add(new Vector2(0, 1));
+                        uvs.Add(new Vector2(1, 1));
+                        uvs.Add(new Vector2(0, 0));
+                        uvs.Add(new Vector2(1, 0));
+                        uvs.Add(new Vector2(0, 1));
+                        uvs.Add(new Vector2(1, 1));
+                        uvs.Add(new Vector2(0, 0));
+                        uvs.Add(new Vector2(1, 0));
+
+
+                        // uv.Add(qqv);
+                        // qqv = new List<Vector2>();
+
+                        for (int i = 0; i < 15; i++)
+                        {
+                            //print(triIndex);
+                            int valA = -1;
+                            if (verts.Count < 11)
+                            {
+
+                                valA = (TriangleTable[triIndex, i]);
+                            }
+                            else
+                            {
+
+                                valA = (TriangleTable[triIndex, i] + (verts.Count - 12));
+                            }
+
+                            if (valA != -1)
+                            {
+                                // print(valA);
+                                tri.Add(valA);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        Tri[0].Clear();
+        Tri[0] = tri;
+        Verts[0].Clear();
+        Verts[0] = verts;
+        uv[0].Clear();
+        uv[0] = uvs;
+        // tri = new List<int>();
+        return new Mesh();
+    }
+
+
+
 
 
     private void GenerateHeightMap(ref float[,] heightMap, float scaleBias, int seed, int octaves, float persistance, float lacunarity, Vector2 offset)
@@ -412,7 +595,7 @@ public class MeshGeneration : MonoBehaviour
             for (int x = 0; x < MAPSIZE_X * ChunckSizeX; x++)
             {
                 // Basically a normalise function. Returns a value between 0 and 1
-                heightMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, heightMap[x, y]);
+                heightMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, heightMap[x, y] * 1.534f);
             }
         }
     }
