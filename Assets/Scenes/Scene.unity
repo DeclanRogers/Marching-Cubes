@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 78837883}
   m_Layer: 0
   m_Name: Plane
-  m_TagString: Untagged
+  m_TagString: Respawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -270,8 +270,8 @@ MonoBehaviour:
   MAPSIZE_X: 25
   MAPSIZE_Y: 150
   MAPSIZE_Z: 25
-  ChunckSizeX: 10
-  ChunckSizeZ: 10
+  ChunckSizeX: 2
+  ChunckSizeZ: 2
   ScaleBias: 2
   Oct: 7
   Persistance: 1.5
@@ -284,6 +284,7 @@ MonoBehaviour:
   mesh: []
   SurfaceMat: {fileID: 2100000, guid: c234f53a1c2a5ef4d9e3762b5eea3e4b, type: 2}
   HumanMade: 0
+  computeShader: {fileID: 0}
 --- !u!1 &396533831
 GameObject:
   m_ObjectHideFlags: 0
@@ -572,7 +573,7 @@ GameObject:
   - component: {fileID: 1952251577}
   m_Layer: 0
   m_Name: Spot Light
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

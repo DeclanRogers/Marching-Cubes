@@ -7,7 +7,7 @@ public class MeshGeneration : MonoBehaviour
     [HideInInspector]
     public int MAPSIZE_X = 25;
     [HideInInspector]
-    public int MAPSIZE_Y = 150;
+    public int MAPSIZE_Y = 25;
     [HideInInspector]
     public int MAPSIZE_Z = 25;
 
@@ -22,7 +22,7 @@ public class MeshGeneration : MonoBehaviour
 
 
     public GridPoint[,,,,] grid;
-
+    public Chunk[,] chunk;
     public GameObject[,,] spheres;
     float[,] heightMap;
     public int seed = 1337;
@@ -45,51 +45,17 @@ public class MeshGeneration : MonoBehaviour
     public Material SurfaceMat;
     public bool HumanMade = true;
 
-    /* private void Update()
-     {
-         if (Input.GetKeyDown(KeyCode.Space))
-         {
-             for (int x = 0; x < MAPSIZE_X; x++)
-             {
-                 for (int y = 0; y < MAPSIZE_Y; y++)
-                 {
-                     for (int z = 0; z < MAPSIZE_Z; z++)
-                     {
 
-                         if (spheres[x, y, z].GetComponent<TerrainPoints>().enabled)
-                         {
-                             grid[x, y, z].active = true;
-                         }
+    ComputeBuffer data;
+    public ComputeShader computeShader;
 
-
-                     }
-                 }
-             }
-             MarchingCubes();
-             Mesh mesh = new Mesh();
-             mesh.Clear();
-             mesh.vertices = Verts.ToArray();
-             mesh.triangles = Tri.ToArray();
-             mesh.uv = uv.ToArray();
-
-
-             GameObject MC = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
-             //gameobject.transform.localScale = new Vector3(30, 30, 30);
-             MC.GetComponent<MeshRenderer>().material = SurfaceMat;
-             MC.GetComponent<MeshRenderer>().receiveShadows = false;
-
-             mesh.RecalculateNormals();
-             MC.GetComponent<MeshFilter>().mesh = mesh;
-         }
-
-
-     }*/
 
 
     void Start()
     {
         grid = new GridPoint[MAPSIZE_X, MAPSIZE_Y, MAPSIZE_Z, ChunckSizeX, ChunckSizeZ];
 
+        chunk = new Chunk[ChunckSizeX, ChunckSizeZ];
         heightMap = new float[ChunckSizeX * MAPSIZE_X, ChunckSizeZ * MAPSIZE_Z];
 
         GenerateHeightMap(ref heightMap, ScaleBias, seed, Oct, Persistance, Lac, Vector2.zero);
@@ -98,6 +64,7 @@ public class MeshGeneration : MonoBehaviour
         {
             for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
             {
+                chunk[CX, CZ].chunk = new Vector2Int(CX, CZ);
                 for (int y = 0; y < MAPSIZE_Y; y++)
                 {
                     for (int x = 0; x < MAPSIZE_X; x++)
@@ -106,18 +73,12 @@ public class MeshGeneration : MonoBehaviour
                         {
                             grid[x, y, z, CX, CZ].pos = new Vector3((CX * 25) + x - CX, y, (CZ * 25) + z - CZ);
                             grid[x, y, z, CX, CZ].active = false;
-                            grid[x, y, z, CX, CZ].peaked = false;
 
-                            grid[x, y, z, CX, CZ].hm = new Vector3((CX * 25) + x, (CZ * 25) + z, heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z]);
+                            grid[x, y, z, CX, CZ].chunk = new Vector2Int(CZ, CX);
                             if (y <= Mathf.Floor(heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z] * 10.9f) - 2)
                             {
                                 grid[x, y, z, CX, CZ].active = true;
-                                if (y == Mathf.Floor(heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z] * 10.0f) - 2)
-                                {
 
-                                    grid[x, y, z, CX, CZ].peaked = true;
-
-                                }
 
                             }
                         }
@@ -125,74 +86,35 @@ public class MeshGeneration : MonoBehaviour
                 }
             }
         }
-        // foreach (var item in grid)
-        // {
-        //     if (item.peaked)
-        //     {
-        //         Instantiate(sphere1, item.pos, Quaternion.identity).name = item.hm.ToString();
-        //     }
-        // }
 
-        //print(grid[0, 5, 1, 1, 1].peaked);
-        //Instantiate(sphere1, grid[0, 5, 1, 1, 1].pos, Quaternion.identity);
-        //print(grid[0, 4, 1, 1, 1].peaked);
-        //Instantiate(sphere, grid[0, 4, 1, 1, 1].pos, Quaternion.identity);
-        if (!HumanMade)
+
+
+        MarchingCubes();
+
+        int q = 0;
+
+
+        foreach (var Chunks in chunk)
         {
 
-            MarchingCubes();
+            Chunks.mesh.vertices = Chunks.verts.ToArray();
+            Chunks.mesh.triangles = Chunks.tri.ToArray();
+            Chunks.mesh.uv = Chunks.uvs.ToArray();
 
-            int q = 0;
 
-            foreach (var item in mesh)
-            {
-                item.vertices = Verts[q].ToArray();
-                item.triangles = Tri[q].ToArray();
-                item.uv = uv[q].ToArray();
-
-                q++;
-
-                GameObject MC = new GameObject("Mesh" + q, typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));
-
-                MC.gameObject.tag = "Ground";
-                MC.GetComponent<MeshRenderer>().material = SurfaceMat;
-                MC.GetComponent<MeshRenderer>().receiveShadows = false;
-                MC.GetComponent<MeshCollider>().sharedMesh = item;
-                item.RecalculateNormals();
-                MC.GetComponent<MeshFilter>().mesh = item;
-            }
+            GameObject MC = new GameObject("Mesh "+ Chunks.chunk, typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider), typeof(ChunkTracker));
+            MC.GetComponent<ChunkTracker>().chunkPos = Chunks.chunk;
+           // print(Chunks.chunk);
+            MC.gameObject.tag = "Ground";
+            MC.GetComponent<MeshRenderer>().material = SurfaceMat;
+            MC.GetComponent<MeshRenderer>().receiveShadows = false;
+            MC.GetComponent<MeshCollider>().sharedMesh = Chunks.mesh;
+            Chunks.mesh.RecalculateNormals();
+            MC.GetComponent<MeshFilter>().mesh = Chunks.mesh;
         }
     }
 
 
-    private void OnDrawGizmos()
-    {
-
-
-        // for (int i = 0; i < 10; i++)
-        // {
-        //     if (grid[0, i, 1, 1, 1].active)
-        //     {
-        //         Gizmos.color = Color.blue;
-        //         Gizmos.DrawCube(grid[0, i, 1, 1, 1].pos, new Vector3(0.4f, 0.4f, 0.4f));
-        //     }
-        //     else
-        //     {
-        //         Gizmos.color = Color.grey;
-        //         Gizmos.DrawCube(grid[0, i, 1, 1, 1].pos, new Vector3(0.4f, 0.4f, 0.4f));
-        //     }
-        // }
-
-       // foreach (var item in grid)
-       // {
-       //     if (item.peaked || item.active)
-       //     {
-       //         Gizmos.color = Color.green;
-       //         Gizmos.DrawSphere(item.pos, 0.2f);
-       //         // print(item.pos);
-       //     }
-       // }
-    }
     void MarchingCubes()
     {
 
@@ -200,9 +122,9 @@ public class MeshGeneration : MonoBehaviour
         {
             for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
             {
-                List<Vector3> verts = new List<Vector3>();
-                List<Vector2> uvs = new List<Vector2>();
-                List<int> tri = new List<int>();
+                chunk[CX, CZ].verts = new List<Vector3>();
+                chunk[CX, CZ].uvs = new List<Vector2>();
+                chunk[CX, CZ].tri = new List<int>();
 
 
 
@@ -215,31 +137,6 @@ public class MeshGeneration : MonoBehaviour
                         {
                             int triIndex = 0;
 
-
-                            // if (grid[x, y, z, CX, CZ].peaked)
-                            // {
-                            //     Instantiate(sphere1, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
-                            // }
-
-                            // if (x == 1 || x == 23 || x == 0)
-                            // {
-                            //     if (x == 0)
-                            //     {
-                            //         Instantiate(sphere1, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
-                            //     }
-                            //     else
-                            //     {
-                            //         Instantiate(sphere, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
-                            //     }
-                            //
-                            // }
-
-
-                            // if (z == 0)
-                            // {
-                            //     Instantiate(sphere1, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
-                            //
-                            // }
 
                             if (grid[x, y, z, CX, CZ].active)
                             {
@@ -296,35 +193,35 @@ public class MeshGeneration : MonoBehaviour
                                 Corners[7] = grid[x, y + 1, z + 1, CX, CZ].pos;
 
 
-                                verts.Add((Corners[0] + Corners[1]) / 2);
-                                verts.Add((Corners[1] + Corners[2]) / 2);
-                                verts.Add((Corners[2] + Corners[3]) / 2);
-                                verts.Add((Corners[3] + Corners[0]) / 2);
-                                verts.Add((Corners[4] + Corners[5]) / 2);
-                                verts.Add((Corners[5] + Corners[6]) / 2);
-                                verts.Add((Corners[6] + Corners[7]) / 2);
-                                verts.Add((Corners[7] + Corners[4]) / 2);
-                                verts.Add((Corners[0] + Corners[4]) / 2);
-                                verts.Add((Corners[5] + Corners[1]) / 2);
-                                verts.Add((Corners[2] + Corners[6]) / 2);
-                                verts.Add((Corners[7] + Corners[3]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[0] + Corners[1]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[1] + Corners[2]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[2] + Corners[3]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[3] + Corners[0]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[4] + Corners[5]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[5] + Corners[6]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[6] + Corners[7]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[7] + Corners[4]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[0] + Corners[4]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[5] + Corners[1]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[2] + Corners[6]) / 2);
+                                chunk[CX, CZ].verts.Add((Corners[7] + Corners[3]) / 2);
 
                                 // Verts.Add(qq);
                                 // qq = new List<Vector3>();
 
 
-                                uvs.Add(new Vector2(0, 1));
-                                uvs.Add(new Vector2(1, 1));
-                                uvs.Add(new Vector2(0, 0));
-                                uvs.Add(new Vector2(1, 0));
-                                uvs.Add(new Vector2(0, 1));
-                                uvs.Add(new Vector2(1, 1));
-                                uvs.Add(new Vector2(0, 0));
-                                uvs.Add(new Vector2(1, 0));
-                                uvs.Add(new Vector2(0, 1));
-                                uvs.Add(new Vector2(1, 1));
-                                uvs.Add(new Vector2(0, 0));
-                                uvs.Add(new Vector2(1, 0));
+                                chunk[CX, CZ].uvs.Add(new Vector2(0, 1));
+                                chunk[CX, CZ].uvs.Add(new Vector2(1, 1));
+                                chunk[CX, CZ].uvs.Add(new Vector2(0, 0));
+                                chunk[CX, CZ].uvs.Add(new Vector2(1, 0));
+                                chunk[CX, CZ].uvs.Add(new Vector2(0, 1));
+                                chunk[CX, CZ].uvs.Add(new Vector2(1, 1));
+                                chunk[CX, CZ].uvs.Add(new Vector2(0, 0));
+                                chunk[CX, CZ].uvs.Add(new Vector2(1, 0));
+                                chunk[CX, CZ].uvs.Add(new Vector2(0, 1));
+                                chunk[CX, CZ].uvs.Add(new Vector2(1, 1));
+                                chunk[CX, CZ].uvs.Add(new Vector2(0, 0));
+                                chunk[CX, CZ].uvs.Add(new Vector2(1, 0));
 
 
                                 // uv.Add(qqv);
@@ -334,7 +231,7 @@ public class MeshGeneration : MonoBehaviour
                                 {
                                     //print(triIndex);
                                     int valA = -1;
-                                    if (verts.Count < 11)
+                                    if (chunk[CX, CZ].verts.Count < 11)
                                     {
 
                                         valA = (TriangleTable[triIndex, i]);
@@ -342,28 +239,12 @@ public class MeshGeneration : MonoBehaviour
                                     else
                                     {
 
-                                        valA = (TriangleTable[triIndex, i] + (verts.Count - 12));
+                                        valA = (TriangleTable[triIndex, i] + (chunk[CX, CZ].verts.Count - 12));
                                     }
 
                                     if (valA != -1)
                                     {
-                                        int index = 0;
-                                        bool matched = false;
-                                        foreach (var item in verts)
-                                        {
-                                            if (item == verts[valA])
-                                            {
-                                                tri.Add(index);
-                                                matched = true;
-                                                print(1);
-                                                break;
-                                            }
-                                            index++;
-                                        }
-                                        if (!matched)
-                                        { 
-                                        tri.Add(valA);
-                                        }
+                                        chunk[CX, CZ].tri.Add(valA);
                                     }
 
                                 }
@@ -371,23 +252,17 @@ public class MeshGeneration : MonoBehaviour
                         }
                     }
                 }
-
-                Tri.Add(tri);
-                Verts.Add(verts);
-                uv.Add(uvs);
-                // tri = new List<int>();
-                mesh.Add(new Mesh());
+                chunk[CX, CZ].mesh = new Mesh();
             }
         }
     }
 
-    public Mesh MarchingCubesUpdate(int CX, int CZ)
+    public void MarchingCubesUpdate(int CX, int CZ)
     {
-        List<Vector3> verts = new List<Vector3>();
-        List<Vector2> uvs = new List<Vector2>();
-        List<int> tri = new List<int>();
 
-
+        chunk[CX, CZ].verts = new List<Vector3>();
+        chunk[CX, CZ].uvs = new List<Vector2>();
+        chunk[CX, CZ].tri = new List<int>();
 
 
         for (int y = 0; y < MAPSIZE_Y - 1; y++)
@@ -398,31 +273,6 @@ public class MeshGeneration : MonoBehaviour
                 {
                     int triIndex = 0;
 
-
-                    // if (grid[x, y, z, CX, CZ].peaked)
-                    // {
-                    //     Instantiate(sphere1, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
-                    // }
-
-                    // if (x == 1 || x == 23 || x == 0)
-                    // {
-                    //     if (x == 0)
-                    //     {
-                    //         Instantiate(sphere1, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
-                    //     }
-                    //     else
-                    //     {
-                    //         Instantiate(sphere, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
-                    //     }
-                    //
-                    // }
-
-
-                    // if (z == 0)
-                    // {
-                    //     Instantiate(sphere1, grid[x, y, z, CX, CZ].pos, Quaternion.identity).name = grid[x, y, z, CX, CZ].hm.ToString();
-                    //
-                    // }
 
                     if (grid[x, y, z, CX, CZ].active)
                     {
@@ -479,35 +329,35 @@ public class MeshGeneration : MonoBehaviour
                         Corners[7] = grid[x, y + 1, z + 1, CX, CZ].pos;
 
 
-                        verts.Add((Corners[0] + Corners[1]) / 2);
-                        verts.Add((Corners[1] + Corners[2]) / 2);
-                        verts.Add((Corners[2] + Corners[3]) / 2);
-                        verts.Add((Corners[3] + Corners[0]) / 2);
-                        verts.Add((Corners[4] + Corners[5]) / 2);
-                        verts.Add((Corners[5] + Corners[6]) / 2);
-                        verts.Add((Corners[6] + Corners[7]) / 2);
-                        verts.Add((Corners[7] + Corners[4]) / 2);
-                        verts.Add((Corners[0] + Corners[4]) / 2);
-                        verts.Add((Corners[5] + Corners[1]) / 2);
-                        verts.Add((Corners[2] + Corners[6]) / 2);
-                        verts.Add((Corners[7] + Corners[3]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[0] + Corners[1]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[1] + Corners[2]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[2] + Corners[3]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[3] + Corners[0]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[4] + Corners[5]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[5] + Corners[6]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[6] + Corners[7]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[7] + Corners[4]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[0] + Corners[4]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[5] + Corners[1]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[2] + Corners[6]) / 2);
+                        chunk[CX, CZ].verts.Add((Corners[7] + Corners[3]) / 2);
 
                         // Verts.Add(qq);
                         // qq = new List<Vector3>();
 
 
-                        uvs.Add(new Vector2(0, 1));
-                        uvs.Add(new Vector2(1, 1));
-                        uvs.Add(new Vector2(0, 0));
-                        uvs.Add(new Vector2(1, 0));
-                        uvs.Add(new Vector2(0, 1));
-                        uvs.Add(new Vector2(1, 1));
-                        uvs.Add(new Vector2(0, 0));
-                        uvs.Add(new Vector2(1, 0));
-                        uvs.Add(new Vector2(0, 1));
-                        uvs.Add(new Vector2(1, 1));
-                        uvs.Add(new Vector2(0, 0));
-                        uvs.Add(new Vector2(1, 0));
+                        chunk[CX, CZ].uvs.Add(new Vector2(0, 1));
+                        chunk[CX, CZ].uvs.Add(new Vector2(1, 1));
+                        chunk[CX, CZ].uvs.Add(new Vector2(0, 0));
+                        chunk[CX, CZ].uvs.Add(new Vector2(1, 0));
+                        chunk[CX, CZ].uvs.Add(new Vector2(0, 1));
+                        chunk[CX, CZ].uvs.Add(new Vector2(1, 1));
+                        chunk[CX, CZ].uvs.Add(new Vector2(0, 0));
+                        chunk[CX, CZ].uvs.Add(new Vector2(1, 0));
+                        chunk[CX, CZ].uvs.Add(new Vector2(0, 1));
+                        chunk[CX, CZ].uvs.Add(new Vector2(1, 1));
+                        chunk[CX, CZ].uvs.Add(new Vector2(0, 0));
+                        chunk[CX, CZ].uvs.Add(new Vector2(1, 0));
 
 
                         // uv.Add(qqv);
@@ -517,7 +367,7 @@ public class MeshGeneration : MonoBehaviour
                         {
                             //print(triIndex);
                             int valA = -1;
-                            if (verts.Count < 11)
+                            if (chunk[CX, CZ].verts.Count < 11)
                             {
 
                                 valA = (TriangleTable[triIndex, i]);
@@ -525,48 +375,31 @@ public class MeshGeneration : MonoBehaviour
                             else
                             {
 
-                                valA = (TriangleTable[triIndex, i] + (verts.Count - 12));
+                                valA = (TriangleTable[triIndex, i] + (chunk[CX, CZ].verts.Count - 12));
                             }
 
                             if (valA != -1)
                             {
-                                int index = 0;
-                                bool matched = false;
-                                foreach (var item in verts)
-                                {
-                                    if (item == verts[valA])
-                                    {
-                                        tri.Add(index);
-                                        matched = true;
-                                        print(1);
-                                        break;
-                                    }
-                                    index++;
-                                }
-                                if (!matched)
-                                {
-                                    tri.Add(valA);
-                                }
-
+                                chunk[CX, CZ].tri.Add(valA);
                             }
+
                         }
                     }
                 }
             }
         }
-
-        Tri[0].Clear();
-        Tri[0] = tri;
-        Verts[0].Clear();
-        Verts[0] = verts;
-        uv[0].Clear();
-        uv[0] = uvs;
-        // tri = new List<int>();
-        return new Mesh();
+        chunk[CX, CZ].mesh = new Mesh();
     }
 
 
-
+    private void OnDrawGizmos()
+    {
+        foreach (var item in grid)
+        {
+            if (item.active)
+                Gizmos.DrawCube(item.pos, new Vector3(0.2f, 0.2f, 0.2f));
+        }
+    }
 
 
     private void GenerateHeightMap(ref float[,] heightMap, float scaleBias, int seed, int octaves, float persistance, float lacunarity, Vector2 offset)

@@ -147,8 +147,6 @@ public class MeshGen : MonoBehaviour
 
     void MarchingCubes()
     {
-        int c = 0;
-
         Vector3[] Corners = new Vector3[8];
         int triIndexA = 0;
         int triIndexB = 0;
