@@ -26,19 +26,19 @@ public class GunFire : MonoBehaviour
         {
 
 
-            if (Physics.Raycast(transform.position, transform.forward, out hit, 50,lmi))
+            if (Physics.Raycast(transform.position, transform.forward, out hit, 50, lmi))
             {
                 if (hit.transform.tag == "Ground")
                 {
 
                     Vector3 centre = hit.point;
-                    chunkChecker = Physics.OverlapBox(centre, new Vector3(radius+2, 50, radius+2), Quaternion.identity ,lm);
+                    chunkChecker = Physics.OverlapBox(centre, new Vector3(radius + 2, 50, radius + 2), Quaternion.identity, lm);
 
                     foreach (var item in chunkChecker)
                     {
                         Vector2Int chunk;
                         print(item.name);
-                        if (item.transform.tag == "Ground" )
+                        if (item.transform.tag == "Ground")
                         {
                             chunk = item.transform.gameObject.GetComponent<ChunkTracker>().chunkPos;
 
@@ -70,7 +70,7 @@ public class GunFire : MonoBehaviour
                             item.transform.parent.gameObject.isStatic = true;
                         }
                     }
-                  // print(chunkChecker.Length);
+                    // print(chunkChecker.Length);
                 }
 
             }
@@ -122,7 +122,7 @@ public class GunFire : MonoBehaviour
                             item.transform.parent.gameObject.isStatic = true;
                         }
                     }
-                  //  print(chunkChecker.Length);
+                    //  print(chunkChecker.Length);
                 }
             }
 

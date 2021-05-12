@@ -545,11 +545,15 @@ PrefabInstance:
       objectReference: {fileID: 223237033}
     - target: {fileID: 151326570799918324, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
       propertyPath: lm.m_Bits
-      value: 39
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 151326570799918324, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
       propertyPath: radius
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 151326570799918324, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
+      propertyPath: lmi.m_Bits
+      value: 39
       objectReference: {fileID: 0}
     - target: {fileID: 151326570799918325, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
       propertyPath: m_RootOrder
