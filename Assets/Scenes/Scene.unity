@@ -270,8 +270,8 @@ MonoBehaviour:
   MAPSIZE_X: 25
   MAPSIZE_Y: 150
   MAPSIZE_Z: 25
-  ChunckSizeX: 2
-  ChunckSizeZ: 2
+  ChunckSizeX: 3
+  ChunckSizeZ: 3
   ScaleBias: 2
   Oct: 7
   Persistance: 1.5
@@ -543,6 +543,14 @@ PrefabInstance:
       propertyPath: meshGen
       value: 
       objectReference: {fileID: 223237033}
+    - target: {fileID: 151326570799918324, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
+      propertyPath: lm.m_Bits
+      value: 39
+      objectReference: {fileID: 0}
+    - target: {fileID: 151326570799918324, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
+      propertyPath: radius
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 151326570799918325, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
       propertyPath: m_RootOrder
       value: 1

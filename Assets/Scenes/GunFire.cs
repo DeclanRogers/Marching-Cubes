@@ -5,8 +5,10 @@ using UnityEngine;
 public class GunFire : MonoBehaviour
 {
     RaycastHit hit;
-    RaycastHit[] chunkChecker;
+    Collider[] chunkChecker;
     public MeshGeneration meshGen;
+    public LayerMask lm = 5;
+    public LayerMask lmi = 0;
     public float radius = 3;
 
     // Update is called once per frame
@@ -24,22 +26,19 @@ public class GunFire : MonoBehaviour
         {
 
 
-            if (Physics.Raycast(transform.position, transform.forward * 100, out hit))
+            if (Physics.Raycast(transform.position, transform.forward, out hit, 50,lmi))
             {
                 if (hit.transform.tag == "Ground")
                 {
 
                     Vector3 centre = hit.point;
-                    chunkChecker = Physics.SphereCastAll(centre, radius+2, Vector3.forward, radius+2);
+                    chunkChecker = Physics.OverlapBox(centre, new Vector3(radius+2, 50, radius+2), Quaternion.identity ,lm);
 
                     foreach (var item in chunkChecker)
                     {
-
-
-
-
                         Vector2Int chunk;
-                        if (item.transform.tag == "Ground")
+                        print(item.name);
+                        if (item.transform.tag == "Ground" )
                         {
                             chunk = item.transform.gameObject.GetComponent<ChunkTracker>().chunkPos;
 
@@ -55,23 +54,23 @@ public class GunFire : MonoBehaviour
                                         if (Mathf.Pow((meshGen.grid[x, y, z, chunk.x, chunk.y].pos.x - centre.x), 2) + Mathf.Pow((meshGen.grid[x, y, z, chunk.x, chunk.y].pos.y - centre.y), 2) + Mathf.Pow((meshGen.grid[x, y, z, chunk.x, chunk.y].pos.z - centre.z), 2) < Mathf.Pow(radius, 2))
                                         {
                                             meshGen.grid[x, y, z, chunk.x, chunk.y].active = false;
-
                                         }
                                     }
                                 }
                             }
+                            item.transform.parent.gameObject.isStatic = false;
                             meshGen.MarchingCubesUpdate(chunk.x, chunk.y);
 
                             meshGen.chunk[chunk.x, chunk.y].mesh.vertices = meshGen.chunk[chunk.x, chunk.y].verts.ToArray();
                             meshGen.chunk[chunk.x, chunk.y].mesh.uv = meshGen.chunk[chunk.x, chunk.y].uvs.ToArray();
                             meshGen.chunk[chunk.x, chunk.y].mesh.triangles = meshGen.chunk[chunk.x, chunk.y].tri.ToArray();
                             meshGen.chunk[chunk.x, chunk.y].mesh.RecalculateNormals();
-                            item.transform.gameObject.GetComponent<MeshFilter>().mesh = null;
-                            item.transform.gameObject.GetComponent<MeshFilter>().mesh = meshGen.chunk[chunk.x, chunk.y].mesh;
-                            item.transform.gameObject.GetComponent<MeshCollider>().sharedMesh = meshGen.chunk[chunk.x, chunk.y].mesh;
+                            item.GetComponentInParent<MeshFilter>().mesh = meshGen.chunk[chunk.x, chunk.y].mesh;
+                            item.GetComponentInParent<MeshCollider>().sharedMesh = meshGen.chunk[chunk.x, chunk.y].mesh;
+                            item.transform.parent.gameObject.isStatic = true;
                         }
                     }
-                   print(chunkChecker.Length);
+                  // print(chunkChecker.Length);
                 }
 
             }
@@ -79,19 +78,21 @@ public class GunFire : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.Mouse1))
         {
-            if (Physics.Raycast(transform.position, transform.forward * 100, out hit))
+            if (Physics.Raycast(transform.position, transform.forward, out hit, 50, lmi))
             {
                 if (hit.transform.tag == "Ground")
                 {
                     Vector3 centre = hit.point;
                     Vector2Int chunk;
 
-                    chunkChecker = Physics.SphereCastAll(centre, radius+4, Vector3.forward, radius+4);
+                    chunkChecker = Physics.OverlapBox(centre, new Vector3(radius + 2, 50, radius + 2), Quaternion.identity, lm);
 
                     foreach (var item in chunkChecker)
                     {
+                        print(item.tag);
                         if (item.transform.tag == "Ground")
                         {
+                            print(item.name);
                             chunk = item.transform.gameObject.GetComponent<ChunkTracker>().chunkPos;
 
                             for (int y = 0; y < meshGen.MAPSIZE_Y; y++)
@@ -108,17 +109,20 @@ public class GunFire : MonoBehaviour
                                     }
                                 }
                             }
+                            item.transform.parent.gameObject.isStatic = false;
+                            print(item.transform.parent.gameObject.isStatic);
                             meshGen.MarchingCubesUpdate(chunk.x, chunk.y);
 
                             meshGen.chunk[chunk.x, chunk.y].mesh.vertices = meshGen.chunk[chunk.x, chunk.y].verts.ToArray();
                             meshGen.chunk[chunk.x, chunk.y].mesh.uv = meshGen.chunk[chunk.x, chunk.y].uvs.ToArray();
                             meshGen.chunk[chunk.x, chunk.y].mesh.triangles = meshGen.chunk[chunk.x, chunk.y].tri.ToArray();
                             meshGen.chunk[chunk.x, chunk.y].mesh.RecalculateNormals();
-                            item.transform.gameObject.GetComponent<MeshFilter>().mesh = meshGen.chunk[chunk.x, chunk.y].mesh;
-                            item.transform.gameObject.GetComponent<MeshCollider>().sharedMesh = meshGen.chunk[chunk.x, chunk.y].mesh;
+                            item.GetComponentInParent<MeshFilter>().mesh = meshGen.chunk[chunk.x, chunk.y].mesh;
+                            item.GetComponentInParent<MeshCollider>().sharedMesh = meshGen.chunk[chunk.x, chunk.y].mesh;
+                            item.transform.parent.gameObject.isStatic = true;
                         }
                     }
-                    print(chunkChecker.Length);
+                  //  print(chunkChecker.Length);
                 }
             }
 

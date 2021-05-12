@@ -31,7 +31,7 @@ public class MeshGeneration : MonoBehaviour
     public GameObject sphere1;
     public GameObject peak;
     public GameObject below;
-
+    
     [HideInInspector]
     public List<Mesh> mesh = new List<Mesh>();
 
@@ -75,7 +75,7 @@ public class MeshGeneration : MonoBehaviour
                             grid[x, y, z, CX, CZ].active = false;
 
                             grid[x, y, z, CX, CZ].chunk = new Vector2Int(CZ, CX);
-                            if (y <= Mathf.Floor(heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z] * 10.9f) - 2)
+                            if (y <= Mathf.Floor(heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z] * 25.0f) - 7)
                             {
                                 grid[x, y, z, CX, CZ].active = true;
 
@@ -103,14 +103,23 @@ public class MeshGeneration : MonoBehaviour
 
 
             GameObject MC = new GameObject("Mesh "+ Chunks.chunk, typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider), typeof(ChunkTracker));
-            MC.GetComponent<ChunkTracker>().chunkPos = Chunks.chunk;
-           // print(Chunks.chunk);
+            GameObject MCC = new GameObject("MeshC "+ Chunks.chunk, typeof(ChunkTracker), typeof(BoxCollider));
+            MCC.GetComponent<ChunkTracker>().chunkPos = Chunks.chunk;
+            //print(Chunks.chunk);
+
+           MCC.GetComponent<BoxCollider>().center = new Vector3(12 + (Chunks.chunk.x * 24), 12, 12 + (Chunks.chunk.y * 24));
+           MCC.GetComponent<BoxCollider>().size = new Vector3(24, 25, 24);
+           MCC.GetComponent<BoxCollider>().isTrigger = true;
+           MCC.layer =4;
+            MCC.tag = "Ground";
+            MCC.transform.parent = MC.transform;
             MC.gameObject.tag = "Ground";
             MC.GetComponent<MeshRenderer>().material = SurfaceMat;
             MC.GetComponent<MeshRenderer>().receiveShadows = false;
             MC.GetComponent<MeshCollider>().sharedMesh = Chunks.mesh;
             Chunks.mesh.RecalculateNormals();
             MC.GetComponent<MeshFilter>().mesh = Chunks.mesh;
+            MC.isStatic = true;
         }
     }
 
@@ -244,7 +253,23 @@ public class MeshGeneration : MonoBehaviour
 
                                     if (valA != -1)
                                     {
-                                        chunk[CX, CZ].tri.Add(valA);
+                                        int index = 0;
+                                        bool matched = false;
+                                        foreach (var item in chunk[CX, CZ].verts)
+                                        {
+                                            if (item == chunk[CX, CZ].verts[valA])
+                                            {
+                                                chunk[CX, CZ].tri.Add(index);
+                                                matched = true;
+                                                print(1);
+                                                break;
+                                            }
+                                            index++;
+                                        }
+                                        if (!matched)
+                                        {
+                                            chunk[CX, CZ].tri.Add(valA);
+                                        }
                                     }
 
                                 }
@@ -389,16 +414,6 @@ public class MeshGeneration : MonoBehaviour
             }
         }
         chunk[CX, CZ].mesh = new Mesh();
-    }
-
-
-    private void OnDrawGizmos()
-    {
-        foreach (var item in grid)
-        {
-            if (item.active)
-                Gizmos.DrawCube(item.pos, new Vector3(0.2f, 0.2f, 0.2f));
-        }
     }
 
 
