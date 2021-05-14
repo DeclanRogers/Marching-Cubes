@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
+using System.ComponentModel;
 
 public class MeshGeneration : MonoBehaviour
 {
@@ -91,9 +93,6 @@ public class MeshGeneration : MonoBehaviour
 
         MarchingCubes();
 
-        int q = 0;
-
-
         foreach (var Chunks in chunk)
         {
 
@@ -126,6 +125,8 @@ public class MeshGeneration : MonoBehaviour
 
     void MarchingCubes()
     {
+       
+
 
         for (int CX = 0; CX < ChunckSizeX; CX++)
         {
@@ -134,10 +135,9 @@ public class MeshGeneration : MonoBehaviour
                 chunk[CX, CZ].verts = new List<Vector3>();
                 chunk[CX, CZ].uvs = new List<Vector2>();
                 chunk[CX, CZ].tri = new List<int>();
-
-
-
-
+                chunk[CX, CZ].ht = new Hashing();
+                chunk[CX, CZ].ht.hashInit();
+                
                 for (int y = 0; y < MAPSIZE_Y - 1; y++)
                 {
                     for (int z = 0; z < MAPSIZE_Z - 1; z++)
@@ -253,23 +253,9 @@ public class MeshGeneration : MonoBehaviour
 
                                     if (valA != -1)
                                     {
-                                        int index = 0;
-                                        bool matched = false;
-                                        foreach (var item in chunk[CX, CZ].verts)
-                                        {
-                                            if (item == chunk[CX, CZ].verts[valA])
-                                            {
-                                                chunk[CX, CZ].tri.Add(index);
-                                                matched = true;
-                                                print(1);
-                                                break;
-                                            }
-                                            index++;
-                                        }
-                                        if (!matched)
-                                        {
-                                            chunk[CX, CZ].tri.Add(valA);
-                                        }
+                                    
+                                       chunk[CX, CZ].tri.Add(chunk[CX, CZ].ht.CheckAganstHash(chunk[CX, CZ].verts[valA], valA));
+         
                                     }
 
                                 }
@@ -277,7 +263,10 @@ public class MeshGeneration : MonoBehaviour
                         }
                     }
                 }
+
                 chunk[CX, CZ].mesh = new Mesh();
+
+
             }
         }
     }
@@ -288,7 +277,7 @@ public class MeshGeneration : MonoBehaviour
         chunk[CX, CZ].verts = new List<Vector3>();
         chunk[CX, CZ].uvs = new List<Vector2>();
         chunk[CX, CZ].tri = new List<int>();
-
+        chunk[CX, CZ].ht.hashInit();
 
         for (int y = 0; y < MAPSIZE_Y - 1; y++)
         {
@@ -405,7 +394,7 @@ public class MeshGeneration : MonoBehaviour
 
                             if (valA != -1)
                             {
-                                chunk[CX, CZ].tri.Add(valA);
+                                chunk[CX, CZ].tri.Add(chunk[CX, CZ].ht.CheckAganstHash(chunk[CX, CZ].verts[valA], valA));
                             }
 
                         }

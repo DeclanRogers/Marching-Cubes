@@ -85,7 +85,8 @@ public class GunFire : MonoBehaviour
                     Vector3 centre = hit.point;
                     Vector2Int chunk;
 
-                    chunkChecker = Physics.OverlapBox(centre, new Vector3(radius + 2, 50, radius + 2), Quaternion.identity, lm);
+                    //chunkChecker = Physics.OverlapBox(centre, new Vector3(radius + 2, 50, radius + 2), Quaternion.identity, lm);
+                    chunkChecker = Physics.OverlapSphere(centre, radius+4, lm);
 
                     foreach (var item in chunkChecker)
                     {

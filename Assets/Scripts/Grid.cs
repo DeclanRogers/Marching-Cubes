@@ -1,7 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Collections;
 using UnityEngine;
-
+using Unity.Jobs;
+using System.Threading;
 
 public struct GridPoint
 {
@@ -18,7 +21,6 @@ public struct Chunk
     public List<int> tri;
     public Mesh mesh;
     public Vector2Int chunk;
-
-
+    public Hashing ht;
 }
 
