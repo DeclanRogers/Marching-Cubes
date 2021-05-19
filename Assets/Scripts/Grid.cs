@@ -10,7 +10,6 @@ public struct GridPoint
 {
     public Vector3 pos;
     public bool active;
-    public bool peaked;
     public Vector2Int chunk;
 }
 

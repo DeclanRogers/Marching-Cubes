@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using System.ComponentModel;
-
+using System.IO;
 public class MeshGeneration : MonoBehaviour
 {
     [HideInInspector]
@@ -33,7 +33,7 @@ public class MeshGeneration : MonoBehaviour
     public GameObject sphere1;
     public GameObject peak;
     public GameObject below;
-    
+
     [HideInInspector]
     public List<Mesh> mesh = new List<Mesh>();
 
@@ -46,21 +46,24 @@ public class MeshGeneration : MonoBehaviour
     public List<List<Vector2>> uv = new List<List<Vector2>>();
     public Material SurfaceMat;
     public bool HumanMade = true;
-
-
-    ComputeBuffer data;
-    public ComputeShader computeShader;
-
-
+    public bool loadingFromFile = false;
+    SaveTerrane st;
 
     void Start()
     {
+
+
         grid = new GridPoint[MAPSIZE_X, MAPSIZE_Y, MAPSIZE_Z, ChunckSizeX, ChunckSizeZ];
 
         chunk = new Chunk[ChunckSizeX, ChunckSizeZ];
+
+        st = new SaveTerrane();
+        st.LoadFile();
+
         heightMap = new float[ChunckSizeX * MAPSIZE_X, ChunckSizeZ * MAPSIZE_Z];
 
         GenerateHeightMap(ref heightMap, ScaleBias, seed, Oct, Persistance, Lac, Vector2.zero);
+
 
         for (int CX = 0; CX < ChunckSizeX; CX++)
         {
@@ -101,15 +104,15 @@ public class MeshGeneration : MonoBehaviour
             Chunks.mesh.uv = Chunks.uvs.ToArray();
 
 
-            GameObject MC = new GameObject("Mesh "+ Chunks.chunk, typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider), typeof(ChunkTracker));
-            GameObject MCC = new GameObject("MeshC "+ Chunks.chunk, typeof(ChunkTracker), typeof(BoxCollider));
+            GameObject MC = new GameObject("Mesh " + Chunks.chunk, typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider), typeof(ChunkTracker));
+            GameObject MCC = new GameObject("MeshC " + Chunks.chunk, typeof(ChunkTracker), typeof(BoxCollider));
             MCC.GetComponent<ChunkTracker>().chunkPos = Chunks.chunk;
             //print(Chunks.chunk);
 
-           MCC.GetComponent<BoxCollider>().center = new Vector3(12 + (Chunks.chunk.x * 24), 12, 12 + (Chunks.chunk.y * 24));
-           MCC.GetComponent<BoxCollider>().size = new Vector3(24, 25, 24);
-           MCC.GetComponent<BoxCollider>().isTrigger = true;
-           MCC.layer =4;
+            MCC.GetComponent<BoxCollider>().center = new Vector3(12 + (Chunks.chunk.x * 24), 12, 12 + (Chunks.chunk.y * 24));
+            MCC.GetComponent<BoxCollider>().size = new Vector3(24, 25, 24);
+            MCC.GetComponent<BoxCollider>().isTrigger = true;
+            MCC.layer = 4;
             MCC.tag = "Ground";
             MCC.transform.parent = MC.transform;
             MC.gameObject.tag = "Ground";
@@ -125,7 +128,7 @@ public class MeshGeneration : MonoBehaviour
 
     void MarchingCubes()
     {
-       
+
 
 
         for (int CX = 0; CX < ChunckSizeX; CX++)
@@ -137,7 +140,7 @@ public class MeshGeneration : MonoBehaviour
                 chunk[CX, CZ].tri = new List<int>();
                 chunk[CX, CZ].ht = new Hashing();
                 chunk[CX, CZ].ht.hashInit();
-                
+
                 for (int y = 0; y < MAPSIZE_Y - 1; y++)
                 {
                     for (int z = 0; z < MAPSIZE_Z - 1; z++)
@@ -253,9 +256,9 @@ public class MeshGeneration : MonoBehaviour
 
                                     if (valA != -1)
                                     {
-                                    
-                                       chunk[CX, CZ].tri.Add(chunk[CX, CZ].ht.CheckAganstHash(chunk[CX, CZ].verts[valA], valA));
-         
+
+                                        chunk[CX, CZ].tri.Add(chunk[CX, CZ].ht.CheckAganstHash(chunk[CX, CZ].verts[valA], valA));
+
                                     }
 
                                 }
@@ -269,6 +272,42 @@ public class MeshGeneration : MonoBehaviour
 
             }
         }
+        string destination = Application.persistentDataPath + "/save.dat";
+        StreamWriter s = new StreamWriter(destination);
+
+        //foreach (var item in grid)
+        for (int CX = 0; CX < ChunckSizeX; CX++)
+        {
+            for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
+            {
+               
+                for (int y = 0; y < MAPSIZE_Y; y++)
+                {
+                    for (int x = 0; x < MAPSIZE_X; x++)
+                    {
+                        for (int z = 0; z < MAPSIZE_Z; z++)
+                        {
+                            {
+                                //if (grid[x,y,z,CX,CZ].active)
+                                {
+                                    s.WriteLine(grid[x, y, z, CX, CZ].chunk.x + "--" + grid[x, y, z, CX, CZ].chunk.y + " -- " + grid[x, y, z, CX, CZ].pos + " -- " + grid[x, y, z, CX, CZ].active);
+                                    if (x == MAPSIZE_X - 1 && y == MAPSIZE_Y - 1 && z == MAPSIZE_Z - 1 && CZ == ChunckSizeX - 1 && CX == ChunckSizeZ - 1)
+                                    {
+                                   // s.WriteLine("AllDone");
+
+                                        print("fuck");
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        s.Flush();
+        s.Close();
     }
 
     public void MarchingCubesUpdate(int CX, int CZ)
@@ -403,6 +442,8 @@ public class MeshGeneration : MonoBehaviour
             }
         }
         chunk[CX, CZ].mesh = new Mesh();
+
+
     }
 
 
@@ -465,6 +506,13 @@ public class MeshGeneration : MonoBehaviour
                 heightMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, heightMap[x, y] * 1.534f);
             }
         }
+    }
+
+
+    private void OnApplicationQuit()
+    {
+
+
     }
     private int[,] TriangleTable = new int[,]
     {

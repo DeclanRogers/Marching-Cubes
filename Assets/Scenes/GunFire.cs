@@ -10,7 +10,14 @@ public class GunFire : MonoBehaviour
     public LayerMask lm = 5;
     public LayerMask lmi = 0;
     public float radius = 3;
+    public GameObject sphere;
+    GameObject point;
 
+    private void Start()
+    {
+        point = Instantiate(sphere, Vector3.zero, Quaternion.identity);
+        point.transform.localScale = new Vector3(radius * 2, radius * 2, radius * 2);
+    }
     // Update is called once per frame
     void Update()
     {
@@ -20,13 +27,14 @@ public class GunFire : MonoBehaviour
             print(Vector3.Distance(transform.position, Vector3.zero));
         }
 
-
+        Physics.Raycast(transform.position, transform.forward, out hit, 50, lmi);
+        point.transform.position = hit.point;
 
         if (Input.GetKey(KeyCode.Mouse0))
         {
 
 
-            if (Physics.Raycast(transform.position, transform.forward, out hit, 50, lmi))
+            if (hit.collider)
             {
                 if (hit.transform.tag == "Ground")
                 {
@@ -78,7 +86,7 @@ public class GunFire : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.Mouse1))
         {
-            if (Physics.Raycast(transform.position, transform.forward, out hit, 50, lmi))
+            if (hit.collider)
             {
                 if (hit.transform.tag == "Ground")
                 {
@@ -111,7 +119,7 @@ public class GunFire : MonoBehaviour
                                 }
                             }
                             item.transform.parent.gameObject.isStatic = false;
-                            print(item.transform.parent.gameObject.isStatic);
+                            
                             meshGen.MarchingCubesUpdate(chunk.x, chunk.y);
 
                             meshGen.chunk[chunk.x, chunk.y].mesh.vertices = meshGen.chunk[chunk.x, chunk.y].verts.ToArray();
@@ -131,6 +139,7 @@ public class GunFire : MonoBehaviour
         if (Input.mouseScrollDelta.y != 0)
         {
             radius += Input.mouseScrollDelta.y / 10;
+            point.transform.localScale = new Vector3(radius * 2, radius * 2, radius * 2);
 
 
         }

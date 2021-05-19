@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 78837883}
   m_Layer: 0
   m_Name: Plane
-  m_TagString: Respawn
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -234,6 +234,7 @@ GameObject:
   m_Component:
   - component: {fileID: 223237032}
   - component: {fileID: 223237033}
+  - component: {fileID: 223237028}
   m_Layer: 0
   m_Name: Marching Cube Manager
   m_TagString: Untagged
@@ -241,6 +242,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &223237028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223237027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b3c9330f51921459ee96c8f6edb9ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshGen: {fileID: 223237033}
 --- !u!4 &223237032
 Transform:
   m_ObjectHideFlags: 0
@@ -270,8 +284,8 @@ MonoBehaviour:
   MAPSIZE_X: 25
   MAPSIZE_Y: 150
   MAPSIZE_Z: 25
-  ChunckSizeX: 3
-  ChunckSizeZ: 3
+  ChunckSizeX: 5
+  ChunckSizeZ: 5
   ScaleBias: 2
   Oct: 7
   Persistance: 1.5
@@ -284,7 +298,7 @@ MonoBehaviour:
   mesh: []
   SurfaceMat: {fileID: 2100000, guid: c234f53a1c2a5ef4d9e3762b5eea3e4b, type: 2}
   HumanMade: 0
-  computeShader: {fileID: 0}
+  loadingFromFile: 0
 --- !u!1 &396533831
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,12 +563,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 151326570799918324, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
       propertyPath: radius
-      value: 20
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 151326570799918324, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
       propertyPath: lmi.m_Bits
       value: 39
       objectReference: {fileID: 0}
+    - target: {fileID: 151326570799918324, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
+      propertyPath: sphere
+      value: 
+      objectReference: {fileID: 8633367626247148491, guid: 4b901bd4eef4a864ba7e873071bbb23c, type: 3}
     - target: {fileID: 151326570799918325, guid: 7380db39c97369944860bcc3c6d66b3d, type: 3}
       propertyPath: m_RootOrder
       value: 1
