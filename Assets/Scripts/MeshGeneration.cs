@@ -556,7 +556,6 @@ public class MeshGeneration : MonoBehaviour
                                     {
                                         s.WriteLine(grid[x, y, z, CX, CZ].chunk.x + "|" + grid[x, y, z, CX, CZ].chunk.y + "|" + grid[x, y, z, CX, CZ].pos.x + "|" + grid[x, y, z, CX, CZ].pos.y + "|" + grid[x, y, z, CX, CZ].pos.z + "|" + grid[x, y, z, CX, CZ].active);
                                     }
-
                                 }
                             }
                         }
