@@ -29,10 +29,7 @@ public class MeshGeneration : MonoBehaviour
     float[,] heightMap;
     public int seed = 1337;
 
-    public GameObject sphere;
-    public GameObject sphere1;
-    public GameObject peak;
-    public GameObject below;
+    public bool canSave;
 
     [HideInInspector]
     public List<Mesh> mesh = new List<Mesh>();
@@ -57,39 +54,100 @@ public class MeshGeneration : MonoBehaviour
 
         chunk = new Chunk[ChunckSizeX, ChunckSizeZ];
 
-        st = new SaveTerrane();
-        st.LoadFile();
 
-        heightMap = new float[ChunckSizeX * MAPSIZE_X, ChunckSizeZ * MAPSIZE_Z];
-
-        GenerateHeightMap(ref heightMap, ScaleBias, seed, Oct, Persistance, Lac, Vector2.zero);
-
-
-        for (int CX = 0; CX < ChunckSizeX; CX++)
+        if (!loadingFromFile)
         {
-            for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
+            heightMap = new float[ChunckSizeX * MAPSIZE_X, ChunckSizeZ * MAPSIZE_Z];
+
+            GenerateHeightMap(ref heightMap, ScaleBias, seed, Oct, Persistance, Lac, Vector2.zero);
+
+
+            for (int CX = 0; CX < ChunckSizeX; CX++)
             {
-                chunk[CX, CZ].chunk = new Vector2Int(CX, CZ);
-                for (int y = 0; y < MAPSIZE_Y; y++)
+                for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
                 {
-                    for (int x = 0; x < MAPSIZE_X; x++)
+                    chunk[CX, CZ].chunk = new Vector2Int(CX, CZ);
+                    for (int y = 0; y < MAPSIZE_Y; y++)
                     {
-                        for (int z = 0; z < MAPSIZE_Z; z++)
+                        for (int x = 0; x < MAPSIZE_X; x++)
                         {
-                            grid[x, y, z, CX, CZ].pos = new Vector3((CX * 25) + x - CX, y, (CZ * 25) + z - CZ);
-                            grid[x, y, z, CX, CZ].active = false;
-
-                            grid[x, y, z, CX, CZ].chunk = new Vector2Int(CZ, CX);
-                            if (y <= Mathf.Floor(heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z] * 25.0f) - 7)
+                            for (int z = 0; z < MAPSIZE_Z; z++)
                             {
-                                grid[x, y, z, CX, CZ].active = true;
+                                grid[x, y, z, CX, CZ].pos = new Vector3((CX * 25) + x - CX, y, (CZ * 25) + z - CZ);
+                                grid[x, y, z, CX, CZ].active = false;
+
+                                grid[x, y, z, CX, CZ].chunk = new Vector2Int(CZ, CX);
+                                if (y <= Mathf.Floor(heightMap[(CX * (25 - 1)) + x, (CZ * (25 - 1)) + z] * 25.0f) - 7)
+                                {
+                                    grid[x, y, z, CX, CZ].active = true;
 
 
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+        else
+        {
+            //st = new SaveTerrane();
+            //st.LoadFile();
+            string destination = Application.persistentDataPath + "/save.dat";
+            StreamReader file;
+
+            string line;
+            string[] lines;
+
+
+            int CXX;
+            int CZZ;
+            int xx;
+            int yy;
+            int zz;
+
+            int x;
+            int z;
+
+            int xxx;
+            int zzz;
+            bool active;
+
+            if (File.Exists(destination)) file = new StreamReader(destination);
+            else
+            {
+                Debug.LogError("File not found");
+                return;
+            }
+            int c = 0;
+            while ((line = file.ReadLine()) != null)
+            {
+                lines = line.Split('|');
+                CXX = System.Convert.ToInt32(lines[0]);
+                CZZ = System.Convert.ToInt32(lines[1]);
+                z = System.Convert.ToInt32(lines[2]);
+                yy = System.Convert.ToInt32(lines[3]);
+                x = System.Convert.ToInt32(lines[4]);
+                active = lines[5] == "True" ? true : false;
+                xx = x > 24 ? x - 24 * CXX : x + 0;
+                zz = z > 24 ? z - 24 * CZZ: z + 0;
+
+
+                try
+                {
+                    grid[xx, yy, zz, CXX, CZZ].pos = new Vector3(x, yy, z);
+                    grid[xx, yy, zz, CXX, CZZ].active = active;
+                    grid[xx, yy, zz, CXX, CZZ].chunk = new Vector2Int(CXX, CZZ);
+                    chunk[CXX, CZZ].chunk = new Vector2Int(CXX, CZZ);
+                }
+                catch
+                {
+                    print(xx + " " + zz + " " + CXX + " " + CZZ + " " + x + " " + z);
+
+                }
+                //print(grid[xx, yy, zz, CXX, CZZ].pos);
+            }
+            file.Close();
         }
 
 
@@ -107,7 +165,7 @@ public class MeshGeneration : MonoBehaviour
             GameObject MC = new GameObject("Mesh " + Chunks.chunk, typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider), typeof(ChunkTracker));
             GameObject MCC = new GameObject("MeshC " + Chunks.chunk, typeof(ChunkTracker), typeof(BoxCollider));
             MCC.GetComponent<ChunkTracker>().chunkPos = Chunks.chunk;
-            //print(Chunks.chunk);
+
 
             MCC.GetComponent<BoxCollider>().center = new Vector3(12 + (Chunks.chunk.x * 24), 12, 12 + (Chunks.chunk.y * 24));
             MCC.GetComponent<BoxCollider>().size = new Vector3(24, 25, 24);
@@ -272,42 +330,7 @@ public class MeshGeneration : MonoBehaviour
 
             }
         }
-        string destination = Application.persistentDataPath + "/save.dat";
-        StreamWriter s = new StreamWriter(destination);
 
-        //foreach (var item in grid)
-        for (int CX = 0; CX < ChunckSizeX; CX++)
-        {
-            for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
-            {
-               
-                for (int y = 0; y < MAPSIZE_Y; y++)
-                {
-                    for (int x = 0; x < MAPSIZE_X; x++)
-                    {
-                        for (int z = 0; z < MAPSIZE_Z; z++)
-                        {
-                            {
-                                //if (grid[x,y,z,CX,CZ].active)
-                                {
-                                    s.WriteLine(grid[x, y, z, CX, CZ].chunk.x + "--" + grid[x, y, z, CX, CZ].chunk.y + " -- " + grid[x, y, z, CX, CZ].pos + " -- " + grid[x, y, z, CX, CZ].active);
-                                    if (x == MAPSIZE_X - 1 && y == MAPSIZE_Y - 1 && z == MAPSIZE_Z - 1 && CZ == ChunckSizeX - 1 && CX == ChunckSizeZ - 1)
-                                    {
-                                   // s.WriteLine("AllDone");
-
-                                        print("fuck");
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-        s.Flush();
-        s.Close();
     }
 
     public void MarchingCubesUpdate(int CX, int CZ)
@@ -511,8 +534,39 @@ public class MeshGeneration : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        if (canSave)
+        {
+            string destination = Application.persistentDataPath + "/save.dat";
+            StreamWriter s = new StreamWriter(destination);
 
+            //foreach (var item in grid)
+            for (int CX = 0; CX < ChunckSizeX; CX++)
+            {
+                for (int CZ = 0; CZ < ChunckSizeZ; CZ++)
+                {
 
+                    for (int y = 0; y < MAPSIZE_Y; y++)
+                    {
+                        for (int x = 0; x < MAPSIZE_X; x++)
+                        {
+                            for (int z = 0; z < MAPSIZE_Z; z++)
+                            {
+                                {
+                                    //if (grid[x,y,z,CX,CZ].active)
+                                    {
+                                        s.WriteLine(grid[x, y, z, CX, CZ].chunk.x + "|" + grid[x, y, z, CX, CZ].chunk.y + "|" + grid[x, y, z, CX, CZ].pos.x + "|" + grid[x, y, z, CX, CZ].pos.y + "|" + grid[x, y, z, CX, CZ].pos.z + "|" + grid[x, y, z, CX, CZ].active);
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+            s.Flush();
+            s.Close();
+        }
     }
     private int[,] TriangleTable = new int[,]
     {

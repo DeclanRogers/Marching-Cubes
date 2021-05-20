@@ -284,21 +284,18 @@ MonoBehaviour:
   MAPSIZE_X: 25
   MAPSIZE_Y: 150
   MAPSIZE_Z: 25
-  ChunckSizeX: 5
-  ChunckSizeZ: 5
+  ChunckSizeX: 2
+  ChunckSizeZ: 2
   ScaleBias: 2
   Oct: 7
   Persistance: 1.5
   Lac: 0.5
   seed: 1713
-  sphere: {fileID: 8633367626247148491, guid: 4b901bd4eef4a864ba7e873071bbb23c, type: 3}
-  sphere1: {fileID: 6779185894838346343, guid: 2f4dc4c9e921ff14c8821a9c66d7ad7b, type: 3}
-  peak: {fileID: 2488093426730405172, guid: 8b2c6b4cf7d54fb4ba593931149da6ce, type: 3}
-  below: {fileID: 2488093426730405172, guid: eb610b823b319f64ea27679024f352a2, type: 3}
+  canSave: 0
   mesh: []
   SurfaceMat: {fileID: 2100000, guid: c234f53a1c2a5ef4d9e3762b5eea3e4b, type: 2}
   HumanMade: 0
-  loadingFromFile: 0
+  loadingFromFile: 1
 --- !u!1 &396533831
 GameObject:
   m_ObjectHideFlags: 0

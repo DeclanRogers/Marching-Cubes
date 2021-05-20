@@ -21,12 +21,6 @@ public class GunFire : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            print(Vector3.Distance(transform.position, Vector3.zero));
-        }
-
         Physics.Raycast(transform.position, transform.forward, out hit, 50, lmi);
         point.transform.position = hit.point;
 
@@ -45,7 +39,6 @@ public class GunFire : MonoBehaviour
                     foreach (var item in chunkChecker)
                     {
                         Vector2Int chunk;
-                        print(item.name);
                         if (item.transform.tag == "Ground")
                         {
                             chunk = item.transform.gameObject.GetComponent<ChunkTracker>().chunkPos;
@@ -63,6 +56,11 @@ public class GunFire : MonoBehaviour
                                         {
                                             meshGen.grid[x, y, z, chunk.x, chunk.y].active = false;
                                         }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    
                                     }
                                 }
                             }
@@ -78,7 +76,7 @@ public class GunFire : MonoBehaviour
                             item.transform.parent.gameObject.isStatic = true;
                         }
                     }
-                    // print(chunkChecker.Length);
+                   
                 }
 
             }
@@ -98,10 +96,10 @@ public class GunFire : MonoBehaviour
 
                     foreach (var item in chunkChecker)
                     {
-                        print(item.tag);
+
                         if (item.transform.tag == "Ground")
                         {
-                            print(item.name);
+
                             chunk = item.transform.gameObject.GetComponent<ChunkTracker>().chunkPos;
 
                             for (int y = 0; y < meshGen.MAPSIZE_Y; y++)
