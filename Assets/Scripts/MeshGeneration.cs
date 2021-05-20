@@ -100,17 +100,16 @@ public class MeshGeneration : MonoBehaviour
             string[] lines;
 
 
+            int x;
+            int y;
+            int z;
             int CXX;
             int CZZ;
             int xx;
             int yy;
             int zz;
 
-            int x;
-            int z;
 
-            int xxx;
-            int zzz;
             bool active;
 
             if (File.Exists(destination)) file = new StreamReader(destination);
@@ -123,26 +122,29 @@ public class MeshGeneration : MonoBehaviour
             while ((line = file.ReadLine()) != null)
             {
                 lines = line.Split('|');
-                CXX = System.Convert.ToInt32(lines[0]);
-                CZZ = System.Convert.ToInt32(lines[1]);
-                z = System.Convert.ToInt32(lines[2]);
-                yy = System.Convert.ToInt32(lines[3]);
-                x = System.Convert.ToInt32(lines[4]);
-                active = lines[5] == "True" ? true : false;
-                xx = x > 24 ? x - 24 * CXX : x + 0;
-                zz = z > 24 ? z - 24 * CZZ: z + 0;
+
+                z = System.Convert.ToInt32(lines[0]);
+                y = System.Convert.ToInt32(lines[1]);
+                x = System.Convert.ToInt32(lines[2]);
+                CXX = System.Convert.ToInt32(lines[3]);
+                CZZ = System.Convert.ToInt32(lines[4]);
+                zz = System.Convert.ToInt32(lines[5]);
+                yy = System.Convert.ToInt32(lines[6]);
+                xx = System.Convert.ToInt32(lines[7]);
+                active = lines[8] == "True" ? true : false;
+
 
 
                 try
                 {
-                    grid[xx, yy, zz, CXX, CZZ].pos = new Vector3(x, yy, z);
-                    grid[xx, yy, zz, CXX, CZZ].active = active;
-                    grid[xx, yy, zz, CXX, CZZ].chunk = new Vector2Int(CXX, CZZ);
+                    grid[x, y, z, CXX, CZZ].pos = new Vector3(xx, yy, zz);
+                    grid[x, y, z, CXX, CZZ].active = active;
+                    grid[x, y, z, CXX, CZZ].chunk = new Vector2Int(CXX, CZZ);
                     chunk[CXX, CZZ].chunk = new Vector2Int(CXX, CZZ);
                 }
                 catch
                 {
-                    print(xx + " " + zz + " " + CXX + " " + CZZ + " " + x + " " + z);
+                   // print(xx + " " + zz + " " + CXX + " " + CZZ + " " + x + " " + z);
 
                 }
                 //print(grid[xx, yy, zz, CXX, CZZ].pos);
@@ -554,7 +556,7 @@ public class MeshGeneration : MonoBehaviour
                                 {
                                     //if (grid[x,y,z,CX,CZ].active)
                                     {
-                                        s.WriteLine(grid[x, y, z, CX, CZ].chunk.x + "|" + grid[x, y, z, CX, CZ].chunk.y + "|" + grid[x, y, z, CX, CZ].pos.x + "|" + grid[x, y, z, CX, CZ].pos.y + "|" + grid[x, y, z, CX, CZ].pos.z + "|" + grid[x, y, z, CX, CZ].active);
+                                        s.WriteLine(x + "|" + y + "|" + z + "|" + grid[x, y, z, CX, CZ].chunk.x + "|" + grid[x, y, z, CX, CZ].chunk.y + "|" + grid[x, y, z, CX, CZ].pos.x + "|" + grid[x, y, z, CX, CZ].pos.y + "|" + grid[x, y, z, CX, CZ].pos.z + "|" + grid[x, y, z, CX, CZ].active);
                                     }
                                 }
                             }

@@ -14,7 +14,7 @@
 			SubShader{
 
 				Tags { "RenderType" = "Opaque" } // None of our terrain is going to be transparent so Opaque it is. 
-				LOD 200 // We only need diffuse for now so 200 is fine. (higher includes bumped, specular, etc) 
+				LOD 100 // We only need diffuse for now so 200 is fine. (higher includes bumped, specular, etc) 
 
 				CGPROGRAM
 				#pragma surface surf Standard fullforwardshadows // Use Unity's standard lighting model 
