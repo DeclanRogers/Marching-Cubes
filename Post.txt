@@ -1,0 +1,17 @@
+Matching Cubes Post project
+
+Issues I encountered during this project, I had to calculate normals, but also making it flat shaded so 
+removing duplicated vertices so they can share vertices.
+
+I had an issue with chunks having random gaps this is because it is a fence post error
+
+I had an issue where saving wouldn’t save the last value completely, I had to flush it and that solved
+that issue.
+
+I swapped out dual contouring and replaced it with Triplanar mapping, this happened because I was running 
+low on time and adding more calculation and decreasing performance wasn’t worth it. The project already runs 
+poorly when editing terrain.
+
+The performance of the system as stated up above is poor, but at least it only happens when editing terrain, 
+editing over chunks is worse. Making bigger maps take a while I would like to learn the Unity jobs system so 
+I can spread the creation of chunks over multiple threads and really boost the speed of start-up.

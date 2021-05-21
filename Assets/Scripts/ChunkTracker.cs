@@ -4,17 +4,5 @@ using UnityEngine;
 
 public class ChunkTracker : MonoBehaviour
 {
-
     public Vector2Int chunkPos;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

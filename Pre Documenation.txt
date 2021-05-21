@@ -1,0 +1,11 @@
+Marching Cubes with Dual Contouring
+
+This application will be a  terrane system where you can edit it and save it and load from file, and prefab the mesh to be imported into a game.
+This is to mimic early 2000's map editors That is the look and feel I want to achieve 
+
+Apart from Unity and System, there are no extra libraries.
+
+To distribute this project, it will be a unity package with a single prefab that needs to be present in the scene.
+
+The marching cubes algorithm goes through a scalar field of eight neighboring points, these represent a face based on which points are active.
+marching the "cube" of eight points gets the polygons, calculates the vertices and the triangles.

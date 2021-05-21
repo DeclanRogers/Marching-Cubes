@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using System.Threading;
 using System.ComponentModel;
 using System.IO;
@@ -42,8 +43,9 @@ public class MeshGeneration : MonoBehaviour
     [HideInInspector]
     public List<List<Vector2>> uv = new List<List<Vector2>>();
     public Material SurfaceMat;
-    public bool HumanMade = true;
     public bool loadingFromFile = false;
+    public bool saveMeshes = true;
+    
     SaveTerrane st;
 
     void Start()
@@ -126,28 +128,19 @@ public class MeshGeneration : MonoBehaviour
                 z = System.Convert.ToInt32(lines[0]);
                 y = System.Convert.ToInt32(lines[1]);
                 x = System.Convert.ToInt32(lines[2]);
-                CXX = System.Convert.ToInt32(lines[3]);
-                CZZ = System.Convert.ToInt32(lines[4]);
+                CXX = System.Convert.ToInt32(lines[4]);
+                CZZ = System.Convert.ToInt32(lines[3]);
                 zz = System.Convert.ToInt32(lines[5]);
                 yy = System.Convert.ToInt32(lines[6]);
                 xx = System.Convert.ToInt32(lines[7]);
                 active = lines[8] == "True" ? true : false;
 
 
+                grid[x, y, z, CXX, CZZ].pos = new Vector3(xx, yy, zz);
+                grid[x, y, z, CXX, CZZ].active = active;
+                grid[x, y, z, CXX, CZZ].chunk = new Vector2Int(CXX, CZZ);
+                chunk[CXX, CZZ].chunk = new Vector2Int(CXX, CZZ);
 
-                try
-                {
-                    grid[x, y, z, CXX, CZZ].pos = new Vector3(xx, yy, zz);
-                    grid[x, y, z, CXX, CZZ].active = active;
-                    grid[x, y, z, CXX, CZZ].chunk = new Vector2Int(CXX, CZZ);
-                    chunk[CXX, CZZ].chunk = new Vector2Int(CXX, CZZ);
-                }
-                catch
-                {
-                   // print(xx + " " + zz + " " + CXX + " " + CZZ + " " + x + " " + z);
-
-                }
-                //print(grid[xx, yy, zz, CXX, CZZ].pos);
             }
             file.Close();
         }
@@ -182,6 +175,7 @@ public class MeshGeneration : MonoBehaviour
             Chunks.mesh.RecalculateNormals();
             MC.GetComponent<MeshFilter>().mesh = Chunks.mesh;
             MC.isStatic = true;
+
         }
     }
 
@@ -567,6 +561,16 @@ public class MeshGeneration : MonoBehaviour
             }
             s.Flush();
             s.Close();
+        }
+
+
+        if (saveMeshes)
+        {
+            foreach (var item in chunk)
+            {
+                AssetDatabase.CreateAsset(item.mesh, "Assets/Meshes/" + "Mesh " + item.chunk + ".asset");
+                AssetDatabase.SaveAssets();
+            }
         }
     }
     private int[,] TriangleTable = new int[,]
